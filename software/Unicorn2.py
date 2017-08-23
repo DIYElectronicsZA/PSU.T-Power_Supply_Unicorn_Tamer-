@@ -10,13 +10,18 @@ class MainApp(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self,parent,title=title)
         self.Show(True)
+
         self.Panel_1 = Values_of_PSU(self)
         self.Panel_2 =Logic_and_values(self)
-        self.Panel_2.Hide()
+
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.Panel_1,0, wx.EXPAND|wx.ALL, 5)
+        sizer.Add(self.Panel_2, 0, wx.EXPAND|wx.ALL, 5)
+        self.SetSizer(sizer)
         self.SetBackgroundColour('#F8F2DA')
         self.Fit ()
         self.Centre()
-
 class Values_of_PSU(wx.Panel):
     MinVolt = 0
     
@@ -109,19 +114,62 @@ class Values_of_PSU(wx.Panel):
         self.Panel_2 = Logic_and_values(self)
         self.Panel_2.Show()
 
-class Logic_and_values(wx.Frame):
+class Logic_and_values(wx.Panel):
     
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent=parent)
+        wx.Panel.__init__(self, parent=parent)
         self.frame = parent
-        txt = wx.TextCtrl(self)
+
+        volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts")
+        self.volts_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Volts")
+        Amps_value = wx.StaticText(self, wx.ID_ANY, "Current Amps")
+        self.Amps_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Amps")
+        Temp_value = wx.StaticText(self, wx.ID_ANY, "Current Temp")
+        self.Temp_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Temp")
 
         Overal_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Left_panel_sizer = wx.BoxSizer(wx.VERTICAL)
-        Left_panel_sizer.Add(txt,0, wx.ALL ,5)
-        Overal_sizer.Add(Left_panel_sizer,0, wx.ALL|wx.LEFT, 5)
+
+        Volts_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        Volts_sizer.Add(volts_value, 0, wx.ALL, 5)   
+        Volts_sizer.Add(self.volts_value_update,0,wx.ALL, 5)
+
+        Amp_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        Amp_sizer.Add(Amps_value,0, wx.ALL,5)
+        Amp_sizer.Add(self.Amps_value_update,0,wx.ALL, 5)
+
+        Temp_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        Temp_sizer.Add(Temp_value,0, wx.ALL,5)
+        Temp_sizer.Add(self.Temp_value_update,0,wx.ALL, 5)
+
+        Left_panel_sizer.Add(Volts_sizer,0, wx.ALL|wx.EXPAND ,5)
+        Left_panel_sizer.Add(Amp_sizer,0, wx.ALL| wx.EXPAND ,5)
+        Left_panel_sizer.Add(Temp_sizer,0, wx.ALL| wx.EXPAND ,5)
+
+        Overal_sizer.Add(Left_panel_sizer,0, wx.ALL|wx.CENTER, 5)
+        self.SetSizer(Overal_sizer)
+        Overal_sizer.Fit(self)
         self.Centre()
 
+        self.on_timer()
+
+    def on_timer(self):
+        countdown = 30
+        ser= serial.Serial('COM7', 115200)
+        while countdown > 0:
+            value_PSU = ser.readline()
+            countdown = countdown -1
+            try:
+                nwstuff = value_PSU.split(',')
+                nwstuff[3] = nwstuff[3].replace(';',"")
+            except:
+                continue
+        self.volts_value_update.SetLabel(str(nwstuff[1]))
+        self.Amps_value_update.SetLabel(str(nwstuff[2]))
+        self.Temp_value_update.SetLabel(str(nwstuff[3]))
+        wx.CallLater(1000, self.on_timer)
+
+    
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
 app.MainLoop()
