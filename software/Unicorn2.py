@@ -22,8 +22,14 @@ class MainApp(wx.Frame):
         self.SetBackgroundColour('#F8F2DA')
         self.Fit ()
         self.Centre()
+
 class Values_of_PSU(wx.Panel):
     MinVolt = 0
+    MaxVolt = 0
+    MinAmp = 0
+    MaxAmp = 0
+    MinTemp = 0
+    MaxTemp = 0
     
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
@@ -59,7 +65,7 @@ class Values_of_PSU(wx.Panel):
         Max_temp_label.SetFont(font2)
         self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
         Start_Stop_button = wx.Button(self, label = "Submit")
-        Start_Stop_button.Bind(wx.EVT_BUTTON, self.Switchpanel)
+        Start_Stop_button.Bind(wx.EVT_BUTTON, self.Saving_inputs)
         
         Start_Stop_button.SetFont(font3)
         Start_Stop_button.SetBackgroundColour('#DDECEF')
@@ -110,9 +116,14 @@ class Values_of_PSU(wx.Panel):
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
 
-    def Switchpanel(self,event):
-        self.Panel_2 = Logic_and_values(self)
-        self.Panel_2.Show()
+    def Saving_inputs(self, event):
+        Values_of_PSU.TimeValue = self.Time_input.GetValue()
+        Values_of_PSU.MaxVolt = self.Max_volt_input.GetValue()
+        Values_of_PSU.MinVolt = self.Min_volt_input.GetValue()
+        Values_of_PSU.MinAmp = self.Min_Amp_input.GetValue()
+        Values_of_PSU.MaxAmp = self.Max_Amp_input.GetValue()
+        Values_of_PSU.MinTemp = self.Min_temp_input.GetValue()
+        Values_of_PSU.MaxTemp = self.Max_temp_input.GetValue()
 
 class Logic_and_values(wx.Panel):
     
