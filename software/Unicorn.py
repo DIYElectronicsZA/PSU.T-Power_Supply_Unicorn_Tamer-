@@ -2,25 +2,29 @@ import serial
 import wx
 import wx.grid as grid
 import time
-import serial
 import io
+import time
 
 class MainApp(wx.Frame):
-    def __init__(self,parent,title):
+    
+    def __init__(self, parent, title):
         wx.Frame.__init__(self,parent,title=title)
         self.Show(True)
         self.Panel = Values_of_PSU(self)
         self.SetBackgroundColour('#F8F2DA')
         self.Fit()
-       
-    
-        
+
 class Values_of_PSU(wx.Panel):
-#1
+    MinVolt = 0
+    
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
-       
+        Values_of_PSU.MinVolt = 0
+        
+
+        self.timer =wx.Timer(self)
+        #self.Bind(wx.EVT_TIMER, self.update, self.timer)
         font = wx.Font(32, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font2 = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
         font3 = wx.Font(16, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
@@ -30,32 +34,34 @@ class Values_of_PSU(wx.Panel):
         Settings_label.SetFont(font)
         Time_label = wx.StaticText(self, wx.ID_ANY, "Time")
         Time_label.SetFont(font2)
-        self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "10")
         
         #Countdown_value = 
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage threshold  ")
         Min_volt_label.SetFont(font2)
-        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "1")
         Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage threshold  ")
         Max_volt_label.SetFont(font2)
-        self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "2")
         Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current threshold   ")
         Min_Amp_label.SetFont(font2)
-        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "3")
         Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current threshold   ")
         Max_Amp_label.SetFont(font2)
-        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "4")
         Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C) threshold")
         Min_temp_label.SetFont(font2)
-        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "5")
         Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C) threshold")
         Max_temp_label.SetFont(font2)
-        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.Serialvalue = wx.StaticText(self,wx.ID_ANY, label = "Serial")
+        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
         Start_Stop_button = wx.Button(self, label = "Start/Stop")
         Reset_button = wx.Button(self, label= "Reset values")
         Start_Stop_button.SetFont(font3)
         Start_Stop_button.SetBackgroundColour('#DDECEF')
         Start_Stop_button.Bind(wx.EVT_BUTTON, self.Saving_inputs)
+        #Start_Stop_button.Bind(wx.EVT_BUTTON, self.SerialReader)
         Reset_button.SetFont(font3)
         Reset_button.SetBackgroundColour('#DDECEF')
         
@@ -80,6 +86,7 @@ class Values_of_PSU(wx.Panel):
         time_input_sizer = wx.BoxSizer(wx.HORIZONTAL)
         time_input_sizer.Add(Time_label, 0, wx.ALL,5)
         time_input_sizer.Add(self.Time_input,0, wx.ALL, 5)
+        time_input_sizer.Add(self.Serialvalue,0, wx.ALL, 5)
         
         
         Volt_input_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -129,14 +136,16 @@ class Values_of_PSU(wx.Panel):
         
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
+        self.on_timer()
+        self.SerialReader()
     
     def Saving_inputs(self, event):
         TimeValue = self.Time_input.GetValue()
         print TimeValue
-        MinVolt = self.Min_volt_input.GetValue()
-        print MinVolt
         MaxVolt = self.Max_volt_input.GetValue()
         print MaxVolt
+        Values_of_PSU.MinVolt = self.Min_volt_input.GetValue()
+        print Values_of_PSU.MinVolt
         MinAmp = self.Min_Amp_input.GetValue()
         print MinAmp
         MaxAmp = self.Max_Amp_input.GetValue()
@@ -145,30 +154,41 @@ class Values_of_PSU(wx.Panel):
         print MinTemp
         MaxTemp = self.Max_temp_input.GetValue()
         print MaxTemp
-        
-       # 2
-    
-    def SerialReader():
+        event.Skip()
+
+    def on_timer(self):
         countdown = 30
         ser= serial.Serial('COM7', 115200)
         while countdown > 0:
-            values_of_PSU = ser.readline()
-            nwstuff = values_of_PSU.split(',')
-            
+            value_PSU = ser.readline()
+            countdown = countdown -1
+            nwstuff = value_PSU.split(',')
+        self.Serialvalue.SetLabel(str(nwstuff[1]))
+        wx.CallLater(1000, self.on_timer)
+
+    def SerialReader(self):
+        countdown = 30
+        ser= serial.Serial('COM7', 115200)
+        
+        while countdown > 0:
+            value_PSU = ser.readline()
+            countdown = countdown -1
+            nwstuff = value_PSU.split(',')
             try:
-                countdown = countdown - 1
                 print nwstuff
-                print nwstuff[0]
-                print nwstuff[1]
-                print nwstuff[2]
+                #print nwstuff[0]
+                #print nwstuff[1]
+                #print nwstuff[2]
                 nwstuff[3] = nwstuff[3].replace(';', "")
-                print nwstuff[3]
-                print '\n'
-                if int(nwstuff[1]) > int(MinVolt):
-                    print nwstuff[1], MinVolt
+                #print nwstuff[3]
+                #print float(nwstuff[1])
+                #print 'Success'
+                #print '\n'
+                print Values_of_PSU.MinVolt
             except:
                 continue
-    
+
+
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
 app.MainLoop()
