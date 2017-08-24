@@ -6,7 +6,7 @@ import io
 import time
 
 ser = serial.Serial(
-    port='COM5',
+    port='COM7',
     baudrate=115200
 )
 
@@ -15,11 +15,8 @@ class MainApp(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self,parent,title=title)
         self.Show(True)
-
         self.Panel_1 = Values_of_PSU(self)
         self.Panel_2 =Logic_and_values(self)
-
-
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
         sizer.Add(self.Panel_2, 0, wx.EXPAND|wx.ALL, 5)
@@ -35,45 +32,45 @@ class Values_of_PSU(wx.Panel):
     MaxAmp = 0
     MinTemp = 0
     MaxTemp = 0
-    
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
 
-        font = wx.Font(32, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
-        font2 = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
-        font3 = wx.Font(16, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        font = wx.Font(34, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        font2 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+        font3 = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         
         #Buttons, Text controls, widgets, values etc
         Settings_label = wx.StaticText(self, wx.ID_ANY, "Settings")
         Settings_label.SetFont(font)
+        Settings_label.SetForegroundColour(wx.Colour(74,74,111))
         Time_label = wx.StaticText(self, wx.ID_ANY, "Time")
         Time_label.SetFont(font2)
         self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "10")
 
-        Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage threshold  ")
+        Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
         Min_volt_label.SetFont(font2)
         self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "1")
-        Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage threshold  ")
+        Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage  ")
         Max_volt_label.SetFont(font2)
         self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "2")
-        Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current threshold   ")
+        Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
         Min_Amp_label.SetFont(font2)
         self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "3")
-        Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current threshold   ")
+        Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current   ")
         Max_Amp_label.SetFont(font2)
         self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "4")
-        Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C) threshold")
+        Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C)")
         Min_temp_label.SetFont(font2)
         self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "5")
-        Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C) threshold")
+        Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C)")
         Max_temp_label.SetFont(font2)
         self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
         Start_Stop_button = wx.Button(self, label = "Submit")
         Start_Stop_button.Bind(wx.EVT_BUTTON, self.Saving_inputs)
         
         Start_Stop_button.SetFont(font3)
-        Start_Stop_button.SetBackgroundColour('#DDECEF')
+        Start_Stop_button.SetBackgroundColour('#6E6E8B')
 
         Overal_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Left_panel_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -127,8 +124,11 @@ class Values_of_PSU(wx.Panel):
         Values_of_PSU.MinVolt = self.Min_volt_input.GetValue()
         Values_of_PSU.MinAmp = self.Min_Amp_input.GetValue()
         Values_of_PSU.MaxAmp = self.Max_Amp_input.GetValue()
+        return Values_of_PSU.MaxAmp
         Values_of_PSU.MinTemp = self.Min_temp_input.GetValue()
+        return Values_of_PSU.MinTemp
         Values_of_PSU.MaxTemp = self.Max_temp_input.GetValue()
+        return Values_of_PSU.MaxTemp
 
 class Logic_and_values(wx.Panel):
 
@@ -138,20 +138,23 @@ class Logic_and_values(wx.Panel):
         self.frame = parent
 
         font2 = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
-        font3 = wx.Font(16, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        font3 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
 
-        volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts")
+        volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
         volts_value.SetFont(font2)
         self.volts_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Volts")
         self.volts_value_update.SetFont(font3)
-        Amps_value = wx.StaticText(self, wx.ID_ANY, "Current Amps")
+        self.volts_value_update.SetForegroundColour(wx.Colour(153,17,37))
+        Amps_value = wx.StaticText(self, wx.ID_ANY, "Current Amps:")
         Amps_value.SetFont(font2)
         self.Amps_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Amps")
         self.Amps_value_update.SetFont(font3)
-        Temp_value = wx.StaticText(self, wx.ID_ANY, "Current Temp")
+        self.Amps_value_update.SetForegroundColour(wx.Colour(153,17,37))
+        Temp_value = wx.StaticText(self, wx.ID_ANY, "Current Temp:")
         Temp_value.SetFont(font2)
         self.Temp_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Temp")
         self.Temp_value_update.SetFont(font3)
+        self.Temp_value_update.SetForegroundColour(wx.Colour(153,17,37))
 
         Overal_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Left_panel_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -161,18 +164,18 @@ class Logic_and_values(wx.Panel):
         Volts_sizer.Add(self.volts_value_update,0,wx.ALL, 5)
 
         Amp_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        Amp_sizer.Add(Amps_value,0, wx.ALL,5)
+        Amp_sizer.Add(Amps_value, 0, wx.ALL, 5)
         Amp_sizer.Add(self.Amps_value_update,0,wx.ALL, 5)
 
         Temp_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        Temp_sizer.Add(Temp_value,0, wx.ALL,5)
-        Temp_sizer.Add(self.Temp_value_update,0,wx.ALL, 5)
+        Temp_sizer.Add(Temp_value, 0, wx.ALL, 5)
+        Temp_sizer.Add(self.Temp_value_update, 0,wx.ALL, 5)
 
-        Left_panel_sizer.Add(Volts_sizer,0, wx.ALL|wx.EXPAND ,5)
-        Left_panel_sizer.Add(Amp_sizer,0, wx.ALL| wx.EXPAND ,5)
-        Left_panel_sizer.Add(Temp_sizer,0, wx.ALL| wx.EXPAND ,5)
+        Left_panel_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND , 5)
+        Left_panel_sizer.Add(Amp_sizer, 0, wx.ALL| wx.EXPAND , 5)
+        Left_panel_sizer.Add(Temp_sizer, 0, wx.ALL| wx.EXPAND , 5)
 
-        Overal_sizer.Add(Left_panel_sizer,0, wx.ALL|wx.CENTER, 5)
+        Overal_sizer.Add(Left_panel_sizer, 0, wx.ALL|wx.CENTER, 5)
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
         self.Centre()
@@ -180,23 +183,39 @@ class Logic_and_values(wx.Panel):
         # ser.open()
 
         self.on_timer()
+        
 
     def on_timer(self):
         countdown = 30
         
         while countdown > 0:
             value_PSU = ser.readline()
-            countdown = countdown -1
+            print value_PSU
             try:
+                countdown = countdown - 1
                 nwstuff = value_PSU.split(',')
                 nwstuff[3] = nwstuff[3].replace(';',"")
+                MinMaxThresh(self)
             except:
                 continue
+        
         self.volts_value_update.SetLabel(str(nwstuff[1]))
         self.Amps_value_update.SetLabel(str(nwstuff[2]))
         self.Temp_value_update.SetLabel(str(nwstuff[3]))
         wx.CallLater(1000, self.on_timer)
+        return nwstuff
+        
+        
 
+    def MinMaxThresh(self, nwstuff):
+        
+        newMinVolt = int(Values_of_PSU.MinVolt)
+        ValueVoltSer = int(nwstuff[1])
+        print newMinVolt
+        print ValueVoltSer
+        if newMinVolt > ValueVoltSer:
+            print "ERROR" 
+    
     
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
