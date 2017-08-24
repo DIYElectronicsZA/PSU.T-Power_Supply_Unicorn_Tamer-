@@ -241,8 +241,8 @@ class Logic_and_values(wx.Panel):
         #self.on_timer()
     def Refreshbutton(self,event):
         Logic_and_values.serial_ports(self,event)
-        Port_dropdown = wx.ComboBox(self, wx.ID_ANY, choices = Logic_and_values.Comlist)
-    
+        self.Port_dropdown.Clear()
+        self.Port_dropdown.Append(Logic_and_values.Comlist)   
     def serial_ports(self, event):
         """ Lists serial port names
 
