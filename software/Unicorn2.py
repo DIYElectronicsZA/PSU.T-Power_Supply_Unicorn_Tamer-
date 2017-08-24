@@ -168,13 +168,13 @@ class Logic_and_values(wx.Panel):
 
     # Class Constructor
     Comlist = []
-    
+    selectedport= "COM7"
     def __init__(self, parent):
         self.serial_ports(self)
-        print Logic_and_values.Comlist
-        #Logic_and_values.ser = serial.Serial(
-        #port='COM7',
-        #baudrate=115200)
+        print Logic_and_values.selectedport
+        Logic_and_values.ser = serial.Serial(
+        port= Logic_and_values.selectedport ,
+        baudrate=115200)
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
 
@@ -189,6 +189,8 @@ class Logic_and_values(wx.Panel):
         #port_refresh.Bind(wx.EVT_BUTTON, self.serial_ports(self))
         #port_refresh.Bind(wx.EVT_BUTTON, Port_dropdown.Append(Logic_and_values.Comlist))
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port')
+        Select_port.Bind(wx.EVT_BUTTON, self.select_port_button)
+        Select_port.Bind(wx.EVT_BUTTON, self.on_timer)
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
         volts_value.SetFont(font2)
         self.volts_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Volts")
@@ -242,7 +244,17 @@ class Logic_and_values(wx.Panel):
     def Refreshbutton(self,event):
         Logic_and_values.serial_ports(self,event)
         self.Port_dropdown.Clear()
-        self.Port_dropdown.Append(Logic_and_values.Comlist)   
+        self.Port_dropdown.Append(Logic_and_values.Comlist)
+
+    def select_port_button(self,event):
+        nselectedport = self.Port_dropdown.GetValue()
+        print nselectedport
+        Logic_and_values.selectedport = nselectedport
+        Logic_and_values.ser = serial.Serial(
+        port= Logic_and_values.selectedport ,
+        baudrate=115200)
+        return nselectedport
+           
     def serial_ports(self, event):
         """ Lists serial port names
 
@@ -272,7 +284,7 @@ class Logic_and_values(wx.Panel):
         Logic_and_values.Comlist = result
         return result
 
-    def on_timer(self):
+    def on_timer(self, event):
         countdown = 30
         
         while countdown > 0:
