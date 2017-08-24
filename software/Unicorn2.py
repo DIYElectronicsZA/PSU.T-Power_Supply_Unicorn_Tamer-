@@ -5,6 +5,11 @@ import time
 import io
 import time
 
+ser = serial.Serial(
+    port='COM5',
+    baudrate=115200
+)
+
 class MainApp(wx.Frame):
     
     def __init__(self, parent, title):
@@ -16,7 +21,7 @@ class MainApp(wx.Frame):
 
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.Panel_1,0, wx.EXPAND|wx.ALL, 5)
+        sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
         sizer.Add(self.Panel_2, 0, wx.EXPAND|wx.ALL, 5)
         self.SetSizer(sizer)
         self.SetBackgroundColour('#F8F2DA')
@@ -126,6 +131,7 @@ class Values_of_PSU(wx.Panel):
         Values_of_PSU.MaxTemp = self.Max_temp_input.GetValue()
 
 class Logic_and_values(wx.Panel):
+
     
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
@@ -171,11 +177,13 @@ class Logic_and_values(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+        # ser.open()
+
         self.on_timer()
 
     def on_timer(self):
         countdown = 30
-        ser= serial.Serial('COM7', 115200)
+        
         while countdown > 0:
             value_PSU = ser.readline()
             countdown = countdown -1
