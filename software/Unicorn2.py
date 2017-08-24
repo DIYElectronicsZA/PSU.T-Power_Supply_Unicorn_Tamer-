@@ -183,9 +183,9 @@ class Logic_and_values(wx.Panel):
 
         Ports = wx.StaticText(self, wx.ID_ANY, "Available Ports")
         Ports.SetFont(font2)
-        Port_dropdown = wx.ComboBox(self, wx.ID_ANY, choices = Logic_and_values.Comlist)
+        self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY, choices = Logic_and_values.Comlist)
         port_refresh = wx.Button(self, wx.ID_ANY, label= "reset ports")
-        #port_refresh.Bind(wx.EVT_BUTTON, Port_dropdown.Clear())
+        port_refresh.Bind(wx.EVT_BUTTON, self.Refreshbutton)
         #port_refresh.Bind(wx.EVT_BUTTON, self.serial_ports(self))
         #port_refresh.Bind(wx.EVT_BUTTON, Port_dropdown.Append(Logic_and_values.Comlist))
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port')
@@ -210,7 +210,7 @@ class Logic_and_values(wx.Panel):
 
         ports_sizer = wx.BoxSizer(wx.HORIZONTAL)
         ports_sizer.Add(Ports, 0, wx.ALL, 5)
-        ports_sizer.Add(Port_dropdown, 0, wx.ALL, 5)
+        ports_sizer.Add(self.Port_dropdown, 0, wx.ALL, 5)
         ports_sizer.Add(Select_port, 0 , wx.ALL, 5)
         ports_sizer.Add(port_refresh, 0, wx.ALL, 5) 
 
@@ -239,6 +239,10 @@ class Logic_and_values(wx.Panel):
         # ser.open()
 
         #self.on_timer()
+    def Refreshbutton(self,event):
+        Logic_and_values.serial_ports(self,event)
+        Port_dropdown = wx.ComboBox(self, wx.ID_ANY, choices = Logic_and_values.Comlist)
+    
     def serial_ports(self, event):
         """ Lists serial port names
 
