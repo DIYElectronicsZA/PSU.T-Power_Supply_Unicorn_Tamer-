@@ -137,7 +137,7 @@ class Values_of_PSU(wx.Panel):
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
         self.on_timer()
-        self.SerialReader()
+        #self.SerialReader()
     
     def Saving_inputs(self, event):
         TimeValue = self.Time_input.GetValue()
