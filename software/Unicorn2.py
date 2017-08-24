@@ -4,20 +4,47 @@ import wx.grid as grid
 import time
 import io
 import time
+import logging
 
+#Setup Debug Logging 
+#From https://inventwithpython.com/blog/2012/04/06/stop-using-print-for-debugging-a-5-minute-quickstart-guide-to-pythons-logging-module/
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+# File Logging 
+#enable this to log to file
+#fh = logging.FileHandler('log_filename.txt')
+#fh.setLevel(logging.DEBUG)
+#fh.setFormatter(formatter)
+#logger.addHandler(fh)
+
+# Debug Console
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+logger.debug('Welcome to Power Supply Unicorn Tamer :)')
+
+# Set up global serial port object 
 ser = serial.Serial(
     port='COM5',
     baudrate=115200
 )
 
+# Main Class 
 class MainApp(wx.Frame):
     
     def __init__(self, parent, title):
         wx.Frame.__init__(self,parent,title=title)
         self.Show(True)
 
+        # Init Values Class
         self.Panel_1 = Values_of_PSU(self)
-        self.Panel_2 =Logic_and_values(self)
+        # Init Logic Class
+        self.Panel_2 = Logic_and_values(self)
 
 
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -28,7 +55,9 @@ class MainApp(wx.Frame):
         self.Fit ()
         self.Centre()
 
+# Values class? 
 class Values_of_PSU(wx.Panel):
+    # Init Class variables
     MinVolt = 0
     MaxVolt = 0
     MinAmp = 0
@@ -36,6 +65,7 @@ class Values_of_PSU(wx.Panel):
     MinTemp = 0
     MaxTemp = 0
     
+    # Class Constructor 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
@@ -121,6 +151,7 @@ class Values_of_PSU(wx.Panel):
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
 
+    # Function which assigns text-box values to class globals
     def Saving_inputs(self, event):
         Values_of_PSU.TimeValue = self.Time_input.GetValue()
         Values_of_PSU.MaxVolt = self.Max_volt_input.GetValue()
@@ -130,9 +161,10 @@ class Values_of_PSU(wx.Panel):
         Values_of_PSU.MinTemp = self.Min_temp_input.GetValue()
         Values_of_PSU.MaxTemp = self.Max_temp_input.GetValue()
 
+# Logic class 
 class Logic_and_values(wx.Panel):
 
-    
+    # Class Constructor
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
@@ -182,20 +214,20 @@ class Logic_and_values(wx.Panel):
         self.on_timer()
 
     def on_timer(self):
-        countdown = 30
-        
-        while countdown > 0:
-            value_PSU = ser.readline()
-            countdown = countdown -1
-            try:
-                nwstuff = value_PSU.split(',')
-                nwstuff[3] = nwstuff[3].replace(';',"")
-            except:
-                continue
-        self.volts_value_update.SetLabel(str(nwstuff[1]))
-        self.Amps_value_update.SetLabel(str(nwstuff[2]))
-        self.Temp_value_update.SetLabel(str(nwstuff[3]))
-        wx.CallLater(1000, self.on_timer)
+
+        value_PSU = ser.readline()
+        try:
+            nwstuff = value_PSU.split(',')
+            nwstuff[3] = nwstuff[3].replace(';',"")
+            self.volts_value_update.SetLabel(str(nwstuff[1]))
+            self.Amps_value_update.SetLabel(str(nwstuff[2]))
+            self.Temp_value_update.SetLabel(str(nwstuff[3]))
+        except:
+            #continue
+            #print("Unexpected error:")
+            #raise
+            logger.debug('Unexpected error: Likely string was malformed & could not be split')
+        wx.CallLater(100, self.on_timer)
 
     
 app = wx.App(False)
