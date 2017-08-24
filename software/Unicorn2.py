@@ -28,17 +28,17 @@ logger.addHandler(ch)
 
 logger.debug('Welcome to Power Supply Unicorn Tamer :)')
 
-# Set up global serial port object 
-ser = serial.Serial(
-    port='COM7',
-    baudrate=115200
-)
+import sys
+import glob
+
+
+
 
 # Main Class 
 class MainApp(wx.Frame):
     
     def __init__(self, parent, title):
-        wx.Frame.__init__(self,parent,title=title)
+        wx.Frame.__init__(self, parent, title=title)
         self.Show(True)
 
         # Init Values Class
@@ -51,7 +51,7 @@ class MainApp(wx.Frame):
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
         sizer.Add(self.Panel_2, 0, wx.EXPAND|wx.ALL, 5)
         self.SetSizer(sizer)
-        self.SetBackgroundColour('#F8F2DA')
+        self.SetBackgroundColour('#E2E3F3')
         self.Fit ()
         self.Centre()
 
@@ -77,7 +77,7 @@ class Values_of_PSU(wx.Panel):
         #Buttons, Text controls, widgets, values etc
         Settings_label = wx.StaticText(self, wx.ID_ANY, "Settings")
         Settings_label.SetFont(font)
-        Settings_label.SetForegroundColour(wx.Colour(74,74,111))
+        Settings_label.SetForegroundColour(wx.Colour(51,63,221))
         Time_label = wx.StaticText(self, wx.ID_ANY, "Time")
         Time_label.SetFont(font2)
         self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "10")
@@ -102,9 +102,10 @@ class Values_of_PSU(wx.Panel):
         self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
         Start_Stop_button = wx.Button(self, label = "Submit")
         Start_Stop_button.Bind(wx.EVT_BUTTON, self.Saving_inputs)
+        Start_Stop_button.SetForegroundColour(wx.Colour(245,245,245))
         
         Start_Stop_button.SetFont(font3)
-        Start_Stop_button.SetBackgroundColour('#6E6E8B')
+        Start_Stop_button.SetBackgroundColour('#000000')
 
         Overal_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Left_panel_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -159,23 +160,35 @@ class Values_of_PSU(wx.Panel):
         Values_of_PSU.MinVolt = self.Min_volt_input.GetValue()
         Values_of_PSU.MinAmp = self.Min_Amp_input.GetValue()
         Values_of_PSU.MaxAmp = self.Max_Amp_input.GetValue()
-        return Values_of_PSU.MaxAmp
         Values_of_PSU.MinTemp = self.Min_temp_input.GetValue()
-        return Values_of_PSU.MinTemp
         Values_of_PSU.MaxTemp = self.Max_temp_input.GetValue()
-        return Values_of_PSU.MaxTemp
 
 # Logic class 
 class Logic_and_values(wx.Panel):
 
     # Class Constructor
+    Comlist = []
+    
     def __init__(self, parent):
+        self.serial_ports(self)
+        print Logic_and_values.Comlist
+        #Logic_and_values.ser = serial.Serial(
+        #port='COM7',
+        #baudrate=115200)
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
 
         font2 = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
         font3 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
 
+        Ports = wx.StaticText(self, wx.ID_ANY, "Available Ports")
+        Ports.SetFont(font2)
+        Port_dropdown = wx.ComboBox(self, wx.ID_ANY, choices = Logic_and_values.Comlist)
+        port_refresh = wx.Button(self, wx.ID_ANY, label= "reset ports")
+        #port_refresh.Bind(wx.EVT_BUTTON, Port_dropdown.Clear())
+        #port_refresh.Bind(wx.EVT_BUTTON, self.serial_ports(self))
+        #port_refresh.Bind(wx.EVT_BUTTON, Port_dropdown.Append(Logic_and_values.Comlist))
+        Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port')
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
         volts_value.SetFont(font2)
         self.volts_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Volts")
@@ -195,6 +208,12 @@ class Logic_and_values(wx.Panel):
         Overal_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Left_panel_sizer = wx.BoxSizer(wx.VERTICAL)
 
+        ports_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        ports_sizer.Add(Ports, 0, wx.ALL, 5)
+        ports_sizer.Add(Port_dropdown, 0, wx.ALL, 5)
+        ports_sizer.Add(Select_port, 0 , wx.ALL, 5)
+        ports_sizer.Add(port_refresh, 0, wx.ALL, 5) 
+
         Volts_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Volts_sizer.Add(volts_value, 0, wx.ALL, 5)   
         Volts_sizer.Add(self.volts_value_update,0,wx.ALL, 5)
@@ -207,6 +226,7 @@ class Logic_and_values(wx.Panel):
         Temp_sizer.Add(Temp_value, 0, wx.ALL, 5)
         Temp_sizer.Add(self.Temp_value_update, 0,wx.ALL, 5)
 
+        Left_panel_sizer.Add(ports_sizer, 0, wx.ALL|wx.EXPAND,5)
         Left_panel_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND , 5)
         Left_panel_sizer.Add(Amp_sizer, 0, wx.ALL| wx.EXPAND , 5)
         Left_panel_sizer.Add(Temp_sizer, 0, wx.ALL| wx.EXPAND , 5)
@@ -218,10 +238,57 @@ class Logic_and_values(wx.Panel):
 
         # ser.open()
 
-        self.on_timer()
-        
+        #self.on_timer()
+    def serial_ports(self, event):
+        """ Lists serial port names
+
+        :raises EnvironmentError:
+            On unsupported or unknown platforms
+        :returns:
+            A list of the serial ports available on the system
+    """
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        # this excludes your current terminal "/dev/tty"
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except (OSError, serial.SerialException):
+                pass
+        Logic_and_values.Comlist = result
+        return result
 
     def on_timer(self):
+        countdown = 30
+        
+        while countdown > 0:
+            value_PSU = Logic_and_values.ser.readline()
+            #print value_PSU
+            try:
+                countdown = countdown - 1
+                nwstuff = value_PSU.split(',')
+                nwstuff[3] = nwstuff[3].replace(';',"")
+                MinMaxThresh(self)
+            except:
+                continue
+        
+        self.volts_value_update.SetLabel(str(nwstuff[1]))
+        self.Amps_value_update.SetLabel(str(nwstuff[2]))
+        self.Temp_value_update.SetLabel(str(nwstuff[3]))
+        wx.CallLater(1000, self.on_timer)
+        return nwstuff
+        
+        
 
         value_PSU = ser.readline()
         try:
