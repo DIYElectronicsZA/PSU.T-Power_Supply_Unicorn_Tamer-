@@ -37,6 +37,11 @@ class MainApp(wx.Frame):
         wx.Frame.__init__(self, parent, title=title)
         self.Show(True)
 
+        # myserialInstance = serial_port(null)  # instantiate serial port class
+        # #self.Panel_1 = User_display(myserialInstance)
+        #self.Panel_1 = User_display(self)
+        #self.Panel_1.set_Serial_Instance(self, myserialInstance)
+
         self.Panel_1 = User_display(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
@@ -107,8 +112,18 @@ class serial_port():
 
 #Visual display for users made up of two panels
 class User_display(wx.Panel):
+    # Class Variables
+    theSerial = serial_port
     # Class Constructor
     def __init__(self, parent):
+        
+
+
+    
+
+
+        
+
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
 
@@ -257,6 +272,16 @@ class User_display(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+
+    # Function to set instance of the serial port class. 
+    #def set_Serial_Instance(self, serial_port passedSerial):
+    #    theSerial = passedSerial
+
+    # Function to do things, like read serial
+    def read_Serial():
+        # error checking
+        if theSerial != null
+            #theSerial.read()
 
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
