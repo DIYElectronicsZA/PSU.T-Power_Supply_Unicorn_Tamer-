@@ -1,5 +1,7 @@
+import sys
+import serial
 #functions for serial port access
-class serial_port():
+class serial_port(object):
 
     Comlist = []
 
