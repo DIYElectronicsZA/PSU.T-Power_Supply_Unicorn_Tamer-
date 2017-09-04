@@ -37,7 +37,16 @@ class MainApp(wx.Frame):
         wx.Frame.__init__(self, parent, title=title)
         self.Show(True)
 
+        # instantiate serial port class
+        # #self.Panel_1 = User_display(myserialInstance)
+        #self.Panel_1 = User_display(self)
+        #self.Panel_1.set_Serial_Instance(self, myserialInstance)
+ 
+        classSerial = serial_port()
+        classSerial.serial_ports_list()
+        Values_for_drop_down = classSerial.Comlist
         self.Panel_1 = User_display(self)
+        
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
         self.SetSizer(sizer)
@@ -53,7 +62,6 @@ class serial_port():
     #Listing available ports for serial
     def serial_ports_list(self):
         """ Lists serial port names
-
     :raises EnvironmentError:
         On unsupported or unknown platforms
     :returns:
@@ -78,6 +86,7 @@ class serial_port():
             except (OSError, serial.SerialException):
                 pass
         serial_port.Comlist = result
+        print serial_port.Comlist
     #opening serial port from user input choice
     def serial_port_open(self, serial_ports_list):
         port_to_open = ""
@@ -108,6 +117,9 @@ class serial_port():
 #Visual display for users made up of two panels
 class User_display(wx.Panel):
     # Class Constructor
+    # Class Variables
+    theSerial = serial_port
+ 
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
@@ -257,6 +269,16 @@ class User_display(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+    # Function to set instance of the serial port class. 
+    #def set_Serial_Instance(self, serial_port passedSerial):
+    #    theSerial = passedSerial
+
+    # Function to do things, like read serial
+    #def read_Serial():
+        # error checking
+        #if theSerial != null
+            #theSerial.read()
+ 
 
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
