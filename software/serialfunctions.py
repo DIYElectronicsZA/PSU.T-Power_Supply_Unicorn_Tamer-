@@ -24,12 +24,13 @@ logger.addHandler(ch)
 
 logger.debug('Welcome to Power Supply Unicorn Tamer :)')
 
-class serial_port(object):
+class SerialPort(object):
 
     Comlist = []
     ser = ""
     port_to_open = ""
     #Listing available ports for serial
+    # TODO: This should really return a list. 
     def serial_ports_list(self):
         """ Lists serial port names
     :raises EnvironmentError:
@@ -55,11 +56,12 @@ class serial_port(object):
                 result.append(port)
             except (OSError, serial.SerialException):
                 pass
-        serial_port.Comlist = result
+        SerialPort.Comlist = result
+        return result
     #opening serial port from user input choice
 
     def serial_port_open(port_to_open):
-        ser = serial.Serial(serial_port.port_to_open, 115200)
+        ser = serial.Serial(SerialPort.port_to_open, 115200)
         ser.close()
         ser.open()
 
@@ -71,6 +73,6 @@ class serial_port(object):
     
     #close serial
     def close_serial(port_to_open):
-        serial_port.ser.close()
+        SerialPort.ser.close()
 
 print "Kill me BEN!"

@@ -7,7 +7,7 @@ import time
 import logging
 import sys
 import glob
-from serialfunctions import serial_port
+from serialfunctions import SerialPort
 
 #Setup Debug Logging 
 #From https://inventwithpython.com/blog/2012/04/06/stop-using-print-for-debugging-a-5-minute-quickstart-guide-to-pythons-logging-module/
@@ -39,11 +39,19 @@ class MainApp(wx.Frame):
         self.Show(True)
 
         # instantiate serial port class
-        # #self.Panel_1 = User_display(myserialInstance)
-        #self.Panel_1 = User_display(self)
+        # #self.Panel_1 = UserDisplayPanel(myserialInstance)
+        #self.Panel_1 = UserDisplayPanel(self)
         #self.Panel_1.set_Serial_Instance(self, myserialInstance)
-        choices_for_dropdown(self)
-        self.Panel_1 = User_display(self)
+
+        # Redundant 
+        # Init Serial Handler class 
+        #serial_handler = SerialHandler(self)
+
+        # Init UserDisplayPanel class
+        self.Panel_1 = UserDisplayPanel(self)
+
+        # Send the comports list to the user display object Redundant? 
+        #self.Panel_1.choices = comports_Class.Comports 
         
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
@@ -54,12 +62,16 @@ class MainApp(wx.Frame):
 
 
 #Visual display for users made up of two panels
-class User_display(wx.Panel):
-    # Class Constructor
+class UserDisplayPanel(wx.Panel):
+    
     # Class Variables
-    choices = []
+    serial_port = SerialPort()
+
+    # choices = [] redundant? 
     port_to_connect = ""
+
     def __init__(self, parent):
+        # Class Constructor
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
         
@@ -112,9 +124,9 @@ class User_display(wx.Panel):
         #Buttons, labels, txt cntrls and widgets for bottom panel
         Ports = wx.StaticText(self, wx.ID_ANY, "Available Ports")
         Ports.SetFont(font2)
-        self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY, choices = self.choices)
+        self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY)
         port_refresh = wx.Button(self, wx.ID_ANY, label= "refresh ports")
-        port_refresh.Bind(wx.EVT_BUTTON, self.Refresh_Dropdown(self))
+        port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown(self))
 
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port')
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
@@ -201,35 +213,56 @@ class User_display(wx.Panel):
 
         Overal_sizer.Add(Top_panel_sizer,0, wx.ALL|wx.LEFT, 5)
         Overal_sizer.Add(Bottom_panel_sizer, 0, wx.ALL|wx.CENTER, 5)
+
+        #setup serial ports list: 
+        #Its running anyway? TODO figure out why? 
+        self.refresh_dropdown(self)
         
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
         self.Centre()
 
-    def Refresh_Dropdown(self,event):
+    def refresh_dropdown(self,event):
+        ''' Need to comment here ;) ''' 
+
+        print "Hi!"
+        
+        # Clear the comports list: 
         self.Port_dropdown.Clear()
-        choices_for_dropdown(self)
-        self.Port_dropdown.Append(User_display.choices)
+        # Add the new comports
+        self.Port_dropdown.Append(UserDisplayPanel.serial_port.serial_ports_list())
 
     def select_port(self,event):
         
-        self.serialvalues = serial_port()
-        self.port_to_connect = self.Port_dropdown.GetValue()
-        if len(self.port_to_connect) < 1:
+        
+        UserDisplayPanel.port_to_connect = self.Port_dropdown.GetValue()
+        if len(UserDisplayPanel.port_to_connect) < 1:
             print "no port selected"
         else:
-            serial_port.port_to_open =self.port_to_connect
-            self.serialvalues.serial_port_open()     
+            UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect
+            UserDisplayPanel.serial_port.serial_port_open()     
+            print "its open!"
         #self.serialvalues.serial_data()
 
-class choices_for_dropdown(object):
-    def __init__(self,event):
-        Comports = []
 
-        self.serialvalues = serial_port()
-        self.serialvalues.serial_ports_list()
-        User_display.choices = self.serialvalues.Comlist
-    
+
+# Redundant: 
+#class SerialHandler(object):
+    #''' Clever descrpiton for class :P ''' 
+
+    # Class Variables: 
+
+    #def __init__(self,event):
+        #''' Class Constructor ''' 
+
+
+    # Function to get a list of comports    
+    #def get_Ports():
+    #    self.serialvalues = serial_port()
+    #    self.serialvalues.serial_ports_list()
+    #    Comports = self.serialvalues.Comlist
+        #UserDisplayPanel.choices = self.serialvalues.Comlist
+
     # Function to set instance of the serial port class. 
     #def set_Serial_Instance(self, serial_port passedSerial):
     #    theSerial = passedSerial
