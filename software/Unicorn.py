@@ -42,10 +42,7 @@ class MainApp(wx.Frame):
         # #self.Panel_1 = User_display(myserialInstance)
         #self.Panel_1 = User_display(self)
         #self.Panel_1.set_Serial_Instance(self, myserialInstance)
-
-        self.serialvalues = serial_port()
-        self.serialvalues.serial_ports_list()
-
+        choices_for_dropdown(self)
         self.Panel_1 = User_display(self)
         
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -60,17 +57,19 @@ class MainApp(wx.Frame):
 class User_display(wx.Panel):
     # Class Constructor
     # Class Variables
- 
+    choices = []
+    port_to_connect = ""
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
+        
 
         font = wx.Font(34, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font2 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
         font3 = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font4 = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
         font5 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
-        
+            
         #Buttons and labels and text inputs for top panel.
         Settings_label = wx.StaticText(self, wx.ID_ANY, "Settings")
         Settings_label.SetFont(font)
@@ -113,15 +112,12 @@ class User_display(wx.Panel):
         #Buttons, labels, txt cntrls and widgets for bottom panel
         Ports = wx.StaticText(self, wx.ID_ANY, "Available Ports")
         Ports.SetFont(font2)
-        self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY)
-        port_refresh = wx.Button(self, wx.ID_ANY, label= "reset ports")
-        #port_refresh.Bind(wx.EVT_BUTTON, self.Refreshbutton)
-
-        #port_refresh.Bind(wx.EVT_BUTTON, self.serial_ports(self))
-        #port_refresh.Bind(wx.EVT_BUTTON, Port_dropdown.Append(Logic_and_values.Comlist))
+        self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY, choices = self.choices)
+        port_refresh = wx.Button(self, wx.ID_ANY, label= "refresh ports")
+        port_refresh.Bind(wx.EVT_BUTTON, self.Refresh_Dropdown(self))
 
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port')
-        #Select_port.Bind(wx.EVT_BUTTON, self.select_port_button)
+        Select_port.Bind(wx.EVT_BUTTON, self.select_port)
         #Select_port.Bind(wx.EVT_BUTTON, self.on_timer)
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
         volts_value.SetFont(font2)
@@ -210,6 +206,29 @@ class User_display(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+    def Refresh_Dropdown(self,event):
+        self.Port_dropdown.Clear()
+        choices_for_dropdown(self)
+        self.Port_dropdown.Append(User_display.choices)
+
+    def select_port(self,event):
+        
+        self.serialvalues = serial_port()
+        self.port_to_connect = self.Port_dropdown.GetValue()
+        if len(self.port_to_connect) < 1:
+            print "no port selected"
+        else:
+            self.serialvalues.serial_port_open()     
+        self.serialvalues.serial_data()
+
+class choices_for_dropdown(object):
+    def __init__(self,event):
+        Comports = []
+
+        self.serialvalues = serial_port()
+        self.serialvalues.serial_ports_list()
+        User_display.choices = self.serialvalues.Comlist
+    
     # Function to set instance of the serial port class. 
     #def set_Serial_Instance(self, serial_port passedSerial):
     #    theSerial = passedSerial

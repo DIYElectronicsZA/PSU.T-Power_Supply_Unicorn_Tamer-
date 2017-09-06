@@ -1,9 +1,33 @@
 import sys
 import serial
+import logging
 #functions for serial port access
+#Setup Debug Logging 
+#From https://inventwithpython.com/blog/2012/04/06/stop-using-print-for-debugging-a-5-minute-quickstart-guide-to-pythons-logging-module/
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+# File Logging 
+#enable this to log to file
+#fh = logging.FileHandler('log_filename.txt')
+#fh.setLevel(logging.DEBUG)
+#fh.setFormatter(formatter)
+#logger.addHandler(fh)
+
+# Debug Console
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+logger.debug('Welcome to Power Supply Unicorn Tamer :)')
+
 class serial_port(object):
 
     Comlist = []
+    ser = ""
 
     #Listing available ports for serial
     def serial_ports_list(self):
@@ -32,30 +56,19 @@ class serial_port(object):
             except (OSError, serial.SerialException):
                 pass
         serial_port.Comlist = result
-        print serial_port.Comlist
     #opening serial port from user input choice
-    def serial_port_open(self, serial_ports_list):
-        port_to_open = ""
-        serial_port_open.ser = serial.Serial(port_to_open, 115200)
-        serial_port_open.ser.open()
+
+    def serial_port_open(port_to_open):
+        ser = serial.Serial(port_to_open, 115200)
+        ser.close()
+        ser.open()
 
     #reading serial and parsing values
-    def serial_data(self, serial_port_open):
-        value_PSU = serial_port_open.ser.readline()
-        try:
-            nwstuff = value_PSU.split(',')
-            nwstuff[3] = nwstuff[3].replace(';',"")
-            self.volts_value_update.SetLabel(str(nwstuff[1]))
-            self.Amps_value_update.SetLabel(str(nwstuff[2]))
-            self.Temp_value_update.SetLabel(str(nwstuff[3]))
-        except:
-            #continue
-            print("Unexpected error:")
-            #raise
-            logger.debug('Unexpected error: Likely string was malformed & could not be split')
-        wx.CallLater(100, self.serial_data)
+    def serial_data():
+        value_PSU = ser.readline()
+        for lines in value_PSU:
+            print lines
     
     #close serial
-    def close_serial(self, serial_port_open):
-        serial_port_open.ser.close()
-
+    def close_serial(port_to_open):
+        serial_port.ser.close()
