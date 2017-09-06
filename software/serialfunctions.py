@@ -62,7 +62,6 @@ class serial_port(object):
         ser = serial.Serial(serial_port.port_to_open, 115200)
         ser.close()
         ser.open()
-        print ser.readline()
 
     #reading serial and parsing values
     def serial_data():
@@ -73,3 +72,5 @@ class serial_port(object):
     #close serial
     def close_serial(port_to_open):
         serial_port.ser.close()
+
+print "Kill me BEN!"
