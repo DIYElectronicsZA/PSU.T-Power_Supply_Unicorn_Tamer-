@@ -218,8 +218,9 @@ class User_display(wx.Panel):
         if len(self.port_to_connect) < 1:
             print "no port selected"
         else:
+            serial_port.port_to_open =self.port_to_connect
             self.serialvalues.serial_port_open()     
-        self.serialvalues.serial_data()
+        #self.serialvalues.serial_data()
 
 class choices_for_dropdown(object):
     def __init__(self,event):

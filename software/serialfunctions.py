@@ -28,7 +28,7 @@ class serial_port(object):
 
     Comlist = []
     ser = ""
-
+    port_to_open = ""
     #Listing available ports for serial
     def serial_ports_list(self):
         """ Lists serial port names
@@ -59,9 +59,10 @@ class serial_port(object):
     #opening serial port from user input choice
 
     def serial_port_open(port_to_open):
-        ser = serial.Serial(port_to_open, 115200)
+        ser = serial.Serial(serial_port.port_to_open, 115200)
         ser.close()
         ser.open()
+        print ser.readline()
 
     #reading serial and parsing values
     def serial_data():
