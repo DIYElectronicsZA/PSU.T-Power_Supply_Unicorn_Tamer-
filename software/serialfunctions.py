@@ -62,18 +62,19 @@ class SerialPort(object):
 
     def serial_port_open(self,Port_To_Open):
         self.port_to_open = Port_To_Open
-        ser = serial.Serial(self.port_to_open, 115200)
-        ser.close()
-        ser.open()
+        SerialPort.ser = serial.Serial(self.port_to_open, 115200)
+        SerialPort.ser.close()
+        SerialPort.ser.open()
 
     #reading serial and parsing values
-    def serial_data():
-        value_PSU = ser.readline()
-        for lines in value_PSU:
-            print lines
+    #def serial_data(self):
+
+        #value_PSU = SerialPort.ser.readline()
+        #for lines in SerialPort.ser:
+        #    print lines
     
     #close serial
     def close_serial(port_to_open):
         SerialPort.ser.close()
 
-print "Kill me BEN!"
+

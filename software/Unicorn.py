@@ -97,6 +97,7 @@ class UserDisplayPanel(wx.Panel):
         Time_label = wx.StaticText(self, wx.ID_ANY, "Time")
         Time_label.SetFont(font2)
         self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "10")
+        #TODO: Error check, to ensure int is entered
 
         #Min and Max Voltage label and text control input for parameters in logic
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
@@ -105,6 +106,8 @@ class UserDisplayPanel(wx.Panel):
         Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage  ")
         Max_volt_label.SetFont(font2)
         self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "2")
+        #TODO: Error check, to ensure int is entered
+        #TODO: Set user friendly default values
 
         #Min and Max Current label and text control input for parameters in logic
         Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
@@ -113,6 +116,8 @@ class UserDisplayPanel(wx.Panel):
         Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current   ")
         Max_Amp_label.SetFont(font2)
         self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "4")
+        #TODO: Error check, to ensure int is entered
+        #TODO: Set user friendly default values
 
         ##Min and Max Temperature label and text control input for parameters in logic
         Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C)")
@@ -121,6 +126,8 @@ class UserDisplayPanel(wx.Panel):
         Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C)")
         Max_temp_label.SetFont(font2)
         self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
+        #TODO: Error check, to ensure int is entered
+        #TODO: Set user friendly default values
 
         #Start/Stop button to start or end the program
         Start_Stop_button = wx.Button(self, label = "Submit")
@@ -135,9 +142,10 @@ class UserDisplayPanel(wx.Panel):
         self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY) #ComboBox
         port_refresh = wx.Button(self, wx.ID_ANY, label= "refresh ports") #Refresh port button
         port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown)
-        Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port') #Select port button
+        Select_port = wx.Button(self, wx.ID_ANY, label = 'Connect to port') #Select port button
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
         self.port_select_error = wx.StaticText(self, wx.ID_ANY, "") #Text area to display Port seletion error
+        self.port_select_error.SetFont(font2)
         #Select_port.Bind(wx.EVT_BUTTON, self.on_timer)
 
         #Labels and values to update via logic for the current volt, current and temperature
@@ -210,7 +218,9 @@ class UserDisplayPanel(wx.Panel):
         ports_sizer.Add(self.Port_dropdown, 0, wx.ALL, 5)
         ports_sizer.Add(Select_port, 0 , wx.ALL, 5)
         ports_sizer.Add(port_refresh, 0, wx.ALL, 5)
-        ports_sizer.Add(self.port_select_error,0, wx.ALL,5) 
+        
+        ports_selection_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        ports_selection_sizer.Add(self.port_select_error,0, wx.ALL,5)
 
         #Volt display sizer
         Volts_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -229,16 +239,16 @@ class UserDisplayPanel(wx.Panel):
 
         #Adding Ports components, Volt display, Amp display and Temp display to BOTTOM Panel
         Bottom_panel_sizer.Add(ports_sizer, 0, wx.ALL|wx.EXPAND,5)
+        Bottom_panel_sizer.Add(ports_selection_sizer, 0, wx.CENTER,5)
         Bottom_panel_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND , 5)
         Bottom_panel_sizer.Add(Amp_sizer, 0, wx.ALL| wx.EXPAND , 5)
         Bottom_panel_sizer.Add(Temp_sizer, 0, wx.ALL| wx.EXPAND , 5)
 
         #Adding Top and Bottom sizers to the overall sizer
-        Overal_sizer.Add(Top_panel_sizer,0, wx.ALL|wx.LEFT, 5)
+        Overal_sizer.Add(Top_panel_sizer,0, wx.ALL|wx.CENTER, 5)
         Overal_sizer.Add(Bottom_panel_sizer, 0, wx.ALL|wx.CENTER, 5)
 
         #setup serial ports list: 
-        #Its running anyway? TODO figure out why? 
         self.refresh_dropdown(self)
         
         self.SetSizer(Overal_sizer)
@@ -247,8 +257,6 @@ class UserDisplayPanel(wx.Panel):
 
     def refresh_dropdown(self,event):
         ''' Method to refresh the list showing in the combobox found in the Bottom Panel in UserDisplayPanel ''' 
-
-        print "Hi!"
         
         # Clear the comports list: 
         self.Port_dropdown.Clear()
@@ -259,47 +267,24 @@ class UserDisplayPanel(wx.Panel):
     def select_port(self,event):
         """Method to connect to a User selected port, ifelse statement to ensure a port is selected"""
         #t = Timer(10.0, self.port_select_error.SetLabel("") )
-        print "TEST"
+        
         UserDisplayPanel.port_to_connect = self.Port_dropdown.GetValue() #Get Value from the ComboBox
         if len(UserDisplayPanel.port_to_connect) < 1:
             self.port_select_error.SetLabel("No port selected")
-            #t = Timer(10.0, self.port_select_error.SetLabel("") )
-            #t.start()
+
         else:
             UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect #Run Opening Port from Serialfunctions.py document
             UserDisplayPanel.serial_port.serial_port_open(UserDisplayPanel.port_to_connect)     
             self.port_select_error.SetLabel("Port opened")
-        #self.serialvalues.serial_data()
 
 
 
-# Redundant: 
-#class SerialHandler(object):
-    #''' Clever descrpiton for class :P ''' 
+#TODO: update Bottom Panel labels to show current values
+#TODO: Create class (or function) to take value from serial and compare to Max and Min and give output
+#TODO: Creat realtime graphs of serial data collected
+#TODO: Create log of values from serial in readable format
+#TODO: Add timer to show when program will end
 
-    # Class Variables: 
-
-    #def __init__(self,event):
-        #''' Class Constructor ''' 
-
-
-    # Function to get a list of comports    
-    #def get_Ports():
-    #    self.serialvalues = serial_port()
-    #    self.serialvalues.serial_ports_list()
-    #    Comports = self.serialvalues.Comlist
-        #UserDisplayPanel.choices = self.serialvalues.Comlist
-
-    # Function to set instance of the serial port class. 
-    #def set_Serial_Instance(self, serial_port passedSerial):
-    #    theSerial = passedSerial
-
-    # Function to do things, like read serial
-    #def read_Serial():
-        # error checking
-        #if theSerial != null
-            #theSerial.read()
- 
 
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
