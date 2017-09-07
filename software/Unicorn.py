@@ -133,7 +133,7 @@ class UserDisplayPanel(wx.Panel):
         Ports.SetFont(font2)
         self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY) #ComboBox
         port_refresh = wx.Button(self, wx.ID_ANY, label= "refresh ports") #Refresh port button
-        port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown(self))
+        port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown)
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port') #Select port button
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
         #Select_port.Bind(wx.EVT_BUTTON, self.on_timer)
@@ -250,7 +250,8 @@ class UserDisplayPanel(wx.Panel):
         # Clear the comports list: 
         self.Port_dropdown.Clear()
         # Add the new comports
-        self.Port_dropdown.Append(UserDisplayPanel.serial_port.serial_ports_list())
+        new_list = UserDisplayPanel.serial_port.serial_ports_list()
+        self.Port_dropdown.Append(new_list)
 
     def select_port(self,event):
         """Method to connect to a User selected port, ifelse statement to ensure a port is selected"""
