@@ -82,7 +82,7 @@ class UserDisplayPanel(wx.Panel):
         self.frame = parent
         
         #Different font styles used throughout the display
-        font = wx.Font(34, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        font  = wx.Font(34, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font2 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
         font3 = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font4 = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
@@ -103,6 +103,7 @@ class UserDisplayPanel(wx.Panel):
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
         Min_volt_label.SetFont(font2)
         self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "1")
+
         Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage  ")
         Max_volt_label.SetFont(font2)
         self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "2")
@@ -113,6 +114,7 @@ class UserDisplayPanel(wx.Panel):
         Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
         Min_Amp_label.SetFont(font2)
         self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "3")
+
         Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current   ")
         Max_Amp_label.SetFont(font2)
         self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "4")
@@ -123,6 +125,7 @@ class UserDisplayPanel(wx.Panel):
         Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C)")
         Min_temp_label.SetFont(font2)
         self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "5")
+
         Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C)")
         Max_temp_label.SetFont(font2)
         self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
@@ -166,8 +169,8 @@ class UserDisplayPanel(wx.Panel):
         self.Temp_value_update.SetForegroundColour(wx.Colour(153,17,37))
 
         #Sizers used to insert widgets
-        Overal_sizer = wx.BoxSizer(wx.VERTICAL) #Largest sizer
-        Top_panel_sizer = wx.BoxSizer(wx.VERTICAL) #Sizer for top half of overall sizer
+        Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
+        Top_panel_sizer    = wx.BoxSizer(wx.VERTICAL) #Sizer for top half of overall sizer
         Bottom_panel_sizer = wx.BoxSizer(wx.VERTICAL) #Sizer for Bottom half of overall sizer
         
         #Setting sizer
@@ -284,6 +287,53 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format
 #TODO: Add timer to show when program will end
+
+class DataObject(object):
+    """Class used to compare values coming from serial and determine
+     if they fall within the parameters specified by user input as well
+      as calculate values such as power from incoming values"""
+    
+    Index = 0 # Used to keep track of how many objects have been created
+    Vmax  = 20
+    Vmin  = 10
+    Amax  = 20
+    Amin  = 10
+    Tmax  = 100
+    Tmin  = 10
+
+    def __init__(volts, amps, temp, port=1):
+        """Class constructor"""
+        self.Volt = volts
+        self.Amps = amps
+        self.Temp = temp
+        self.Port = port
+        Index = Index+1
+    
+    def updatecurrentvalues(self):
+        #TODO
+        pass
+    
+    def changeclassvariables(self):
+        #TODO
+        pass
+    
+
+    #Method to calculate power using voltage and amps coming from serial
+    def calculatepower (self, volts, amps):
+        power = float(self.Volts) * float(self.Amps)
+        return power
+
+    #Method to check if voltage falls within parameters
+    def checkerrorvoltage(self, volts):
+        #TODO
+        pass
+    
+    #Method to check if current falls within parameters
+    def checkerrorcurrent(self, amps):
+        #TODO
+        pass
+    
+
 
 
 app = wx.App(False)
