@@ -8,7 +8,8 @@ import logging
 import sys
 import glob
 from serialfunctions import SerialPort
-from threading import Timer
+import threading
+
 
 #3 parts
 #1: User Display and interactions
@@ -309,7 +310,7 @@ class DataObject(object):
         self.Port = port
         Index = Index+1
     
-    def updatecurrentvalues(self):
+    def updatedisplayvalues(self):
         #TODO
         pass
     
