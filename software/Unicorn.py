@@ -8,6 +8,7 @@ import logging
 import sys
 import glob
 from serialfunctions import SerialPort
+from threading import Timer
 
 #3 parts
 #1: User Display and interactions
@@ -136,6 +137,7 @@ class UserDisplayPanel(wx.Panel):
         port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown)
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Select port') #Select port button
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
+        self.port_select_error = wx.StaticText(self, wx.ID_ANY, "") #Text area to display Port seletion error
         #Select_port.Bind(wx.EVT_BUTTON, self.on_timer)
 
         #Labels and values to update via logic for the current volt, current and temperature
@@ -207,7 +209,8 @@ class UserDisplayPanel(wx.Panel):
         ports_sizer.Add(Ports, 0, wx.ALL, 5)
         ports_sizer.Add(self.Port_dropdown, 0, wx.ALL, 5)
         ports_sizer.Add(Select_port, 0 , wx.ALL, 5)
-        ports_sizer.Add(port_refresh, 0, wx.ALL, 5) 
+        ports_sizer.Add(port_refresh, 0, wx.ALL, 5)
+        ports_sizer.Add(self.port_select_error,0, wx.ALL,5) 
 
         #Volt display sizer
         Volts_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -255,15 +258,17 @@ class UserDisplayPanel(wx.Panel):
 
     def select_port(self,event):
         """Method to connect to a User selected port, ifelse statement to ensure a port is selected"""
-        
-        
+        #t = Timer(10.0, self.port_select_error.SetLabel("") )
+        print "TEST"
         UserDisplayPanel.port_to_connect = self.Port_dropdown.GetValue() #Get Value from the ComboBox
         if len(UserDisplayPanel.port_to_connect) < 1:
-            print "no port selected"
+            self.port_select_error.SetLabel("No port selected")
+            #t = Timer(10.0, self.port_select_error.SetLabel("") )
+            #t.start()
         else:
             UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect #Run Opening Port from Serialfunctions.py document
-            UserDisplayPanel.serial_port.serial_port_open()     
-            print "its open!"
+            UserDisplayPanel.serial_port.serial_port_open(UserDisplayPanel.port_to_connect)     
+            self.port_select_error.SetLabel("Port opened")
         #self.serialvalues.serial_data()
 
 
