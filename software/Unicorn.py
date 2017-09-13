@@ -280,14 +280,20 @@ class UserDisplayPanel(wx.Panel):
             UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect #Run Opening Port from Serialfunctions.py document
             UserDisplayPanel.serial_port.serial_port_open(UserDisplayPanel.port_to_connect)     
             self.port_select_error.SetLabel("Port opened")
-            t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data)
+            #self.update_serial_display()   
+            t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data)            
+            t.start() 
             
-            self.update_serial_display()            
-            t.start()    
+    
     def update_serial_display(self):
-        self.volts_value_update.SetLabel('penis')
-        self.Amps_value_update.SetLabel("penis")
-        self.Temp_value_update.SetLabel('penis')
+        """Function to update bottom panel display to current serial values"""
+
+        #Update for volts value
+        self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts)
+        #Update for Amp value
+        self.Amps_value_update.SetLabel(UserDisplayPanel.serial_port.amps)
+        #Update for Temp value
+        self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp)
 
 
 
@@ -318,7 +324,6 @@ class DataObject(object):
         self.Temp = temp
         self.Port = port
         Index = Index+1
-    
     def updatedisplayvalues(self):
         #TODO
         pass

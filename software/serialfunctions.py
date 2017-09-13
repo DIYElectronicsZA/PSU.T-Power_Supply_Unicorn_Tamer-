@@ -30,9 +30,9 @@ class SerialPort(object):
     Comlist = []
     ser     = ""
     port    = ''
-    volts   = ''
-    amps    = ''
-    temp    = ''
+    volts   = '0'
+    amps    = '0'
+    temp    = '0'
     #Listing available ports for serial
     def serial_ports_list(self):
         """ Lists serial port names
@@ -73,15 +73,22 @@ class SerialPort(object):
     #reading serial and parsing values
     def serial_data(self):
 
+        serial_list = ()
         serial_lines = SerialPort.ser.readline()
         for serial_output in SerialPort.ser:
-            serial_output = serial_output.split(',')
-            serial_output[3] = serial_output[3].replace(';',"")
-            SerialPort.port  = serial_output[0]
-            SerialPort.volts = serial_output[1]  
-            SerialPort.amps  = serial_output[2] 
-            SerialPort.temp  = serial_output[3]
-
+            try:
+                #serial_list.append(serial_output)
+                #print serial_list
+                serial_output = serial_output.split(',')
+                serial_list.append(serial_output)
+                print serial_list
+                serial_output[3] = serial_output[3].replace(';',"")
+                SerialPort.port  = serial_output[0]
+                SerialPort.volts = serial_output[1]  
+                SerialPort.amps  = serial_output[2] 
+                SerialPort.temp  = serial_output[3]
+            except:
+                continue
     
     #close serial
     def close_serial(self):
