@@ -28,7 +28,11 @@ class SerialPort(object):
     """Class containing functions to list available Comports,
     Open a serial port, close a serial port and read data from a serial port"""
     Comlist = []
-    ser = ""
+    ser     = ""
+    port    = ''
+    volts   = ''
+    amps    = ''
+    temp    = ''
     #Listing available ports for serial
     def serial_ports_list(self):
         """ Lists serial port names
@@ -69,12 +73,18 @@ class SerialPort(object):
     #reading serial and parsing values
     def serial_data(self):
 
-        value_PSU = SerialPort.ser.readline()
-        for lines in SerialPort.ser:
-            print lines
+        serial_lines = SerialPort.ser.readline()
+        for serial_output in SerialPort.ser:
+            serial_output = serial_output.split(',')
+            serial_output[3] = serial_output[3].replace(';',"")
+            SerialPort.port  = serial_output[0]
+            SerialPort.volts = serial_output[1]  
+            SerialPort.amps  = serial_output[2] 
+            SerialPort.temp  = serial_output[3]
+
     
     #close serial
-    def close_serial(port_to_open):
+    def close_serial(self):
         """Function to close serial port connection"""
         SerialPort.ser.close()
 

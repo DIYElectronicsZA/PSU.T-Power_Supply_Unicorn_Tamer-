@@ -17,12 +17,13 @@ import threading
 #3: Logic using User inputs
 
 #Setup Debug Logging 
-#From https://inventwithpython.com/blog/2012/04/06/stop-using-print-for-debugging-a-5-minute-quickstart-guide-to-pythons-logging-module/
+#From https://inventwithpython.com/blog/2012/04/06/
+# stop-using-print-for-debugging-a-5-minute-quickstart-guide-to-pythons-logging-module/
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-# File Logging 
+#File Logging 
 #enable this to log to file
 #fh = logging.FileHandler('log_filename.txt')
 #fh.setLevel(logging.DEBUG)
@@ -38,19 +39,18 @@ logger.debug('Welcome to Power Supply Unicorn Tamer :)')
 
 #Initiation class
 class MainApp(wx.Frame):
-    
     def __init__(self, parent, title):
         """Class Constructor"""
         wx.Frame.__init__(self, parent, title=title)
         self.Show(True)
 
-        # instantiate serial port class
-        # #self.Panel_1 = UserDisplayPanel(myserialInstance)
+        #instantiate serial port class
+        #self.Panel_1 = UserDisplayPanel(myserialInstance)
         #self.Panel_1 = UserDisplayPanel(self)
         #self.Panel_1.set_Serial_Instance(self, myserialInstance)
 
-        # Redundant 
-        # Init Serial Handler class 
+        #Redundant 
+        #Init Serial Handler class 
         #serial_handler = SerialHandler(self)
 
         # Init UserDisplayPanel class
@@ -73,8 +73,7 @@ class UserDisplayPanel(wx.Panel):
     
     # Class Variables
     serial_port = SerialPort()
-
-    # choices = [] redundant? 
+ 
     port_to_connect = ""
 
     def __init__(self, parent):
@@ -265,6 +264,7 @@ class UserDisplayPanel(wx.Panel):
         # Clear the comports list: 
         self.Port_dropdown.Clear()
         # Add the new comports
+        
         new_list = UserDisplayPanel.serial_port.serial_ports_list()
         self.Port_dropdown.Append(new_list)
 
@@ -280,6 +280,15 @@ class UserDisplayPanel(wx.Panel):
             UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect #Run Opening Port from Serialfunctions.py document
             UserDisplayPanel.serial_port.serial_port_open(UserDisplayPanel.port_to_connect)     
             self.port_select_error.SetLabel("Port opened")
+            t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data)
+            
+            self.update_serial_display()            
+            t.start()    
+    def update_serial_display(self):
+        self.volts_value_update.SetLabel('penis')
+        self.Amps_value_update.SetLabel("penis")
+        self.Temp_value_update.SetLabel('penis')
+
 
 
 
