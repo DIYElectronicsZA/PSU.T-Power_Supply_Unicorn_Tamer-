@@ -338,12 +338,12 @@ class DataObject(object):
 
     #Method to check if voltage falls within parameters
     def checkerrorvoltage(self, volts):
-        if float(Vmin) < float(self.Volt) > float(Vmax):
+        if float(Vmin) > float(self.Volt) > float(Vmax):
             print "error"
     
     #Method to check if current falls within parameters
     def checkerrorcurrent(self, amps):
-        if float(Amin) < float(self.Amps) > float(Amax):
+        if float(Amin) > float(self.Amps) > float(Amax):
             print "error"
     
 
