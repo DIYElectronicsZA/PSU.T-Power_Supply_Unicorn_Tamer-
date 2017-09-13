@@ -90,6 +90,7 @@ class SerialPort(object):
             except:
                 continue
     
+
     #close serial
     def close_serial(self):
         """Function to close serial port connection"""

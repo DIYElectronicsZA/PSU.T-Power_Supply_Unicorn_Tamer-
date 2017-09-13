@@ -323,10 +323,8 @@ class DataObject(object):
         self.Amps = amps
         self.Temp = temp
         self.Port = port
-        Index = Index+1
-    def updatedisplayvalues(self):
-        #TODO
-        pass
+        Index = Index+1 
+        
     
     def changeclassvariables(self):
         #TODO
@@ -340,13 +338,13 @@ class DataObject(object):
 
     #Method to check if voltage falls within parameters
     def checkerrorvoltage(self, volts):
-        #TODO
-        pass
+        if float(Vmin) < float(self.Volt) > float(Vmax):
+            print "error"
     
     #Method to check if current falls within parameters
     def checkerrorcurrent(self, amps):
-        #TODO
-        pass
+        if float(Amin) < float(self.Amps) > float(Amax):
+            print "error"
     
 
 
