@@ -275,7 +275,7 @@ class UserDisplayPanel(wx.Panel):
 
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
-        update_serial_display()
+        self.update_serial_display()
 
     def update_serial_display(self):
         """Function to update bottom panel display to current serial values"""
