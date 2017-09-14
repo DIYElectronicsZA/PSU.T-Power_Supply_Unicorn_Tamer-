@@ -131,10 +131,12 @@ class UserDisplayPanel(wx.Panel):
         Ports = wx.StaticText(self, wx.ID_ANY, "Available Ports") #Label for available ports
         Ports.SetFont(font2)
         self.Port_dropdown = wx.ComboBox(self, wx.ID_ANY) #ComboBox
-        port_refresh = wx.Button(self, wx.ID_ANY, label= "refresh ports") #Refresh port button
+        port_refresh = wx.Button(self, wx.ID_ANY, label= "Refresh ports") #Refresh port button
         port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown)
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Connect to port') #Select port button
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
+        Disconnect_port = wx.Button(self, wx.ID_ANY, label = "Disconnect")
+        Disconnect_port.Bind(wx.EVT_BUTTON, self.stop_serial) #Disconnect from serial port
         self.port_select_error = wx.StaticText(self, wx.ID_ANY, "") #Text area to display Port seletion error
         self.port_select_error.SetFont(font2)
 
@@ -208,6 +210,7 @@ class UserDisplayPanel(wx.Panel):
         ports_sizer.Add(self.Port_dropdown, 0, wx.ALL, 5)
         ports_sizer.Add(Select_port, 0 , wx.ALL, 5)
         ports_sizer.Add(port_refresh, 0, wx.ALL, 5)
+        ports_sizer.Add(Disconnect_port, 0, wx.ALL, 5)
         
         ports_selection_sizer = wx.BoxSizer(wx.HORIZONTAL)
         ports_selection_sizer.Add(self.port_select_error,0, wx.ALL,5)
@@ -275,7 +278,8 @@ class UserDisplayPanel(wx.Panel):
 
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
-        self.update_serial_display()
+        #while True:
+            #self.update_serial_display()
 
     def update_serial_display(self):
         """Function to update bottom panel display to current serial values"""
@@ -287,7 +291,8 @@ class UserDisplayPanel(wx.Panel):
         #Update for Temp value
         self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp)
 
-
+    def stop_serial(self, event):
+        UserDisplayPanel.serial_port.close_serial()
 
 
 #TODO: update Bottom Panel labels to show current values
