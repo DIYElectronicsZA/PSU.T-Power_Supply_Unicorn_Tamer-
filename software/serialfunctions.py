@@ -77,9 +77,11 @@ class SerialPort(object):
         #serial_lines = SerialPort.ser.readline()
         for serial_output in SerialPort.ser:
             try:
+                print serial_output
                 serial_output = serial_output.split(',')
                 serial_list.append(serial_output)
                 serial_output[3] = serial_output[3].replace(';',"")
+                serial_output[3] = serial_output[3].strip('\r\n')
                 SerialPort.port  = serial_output[0]
                 SerialPort.volts = serial_output[1]  
                 SerialPort.amps  = serial_output[2] 

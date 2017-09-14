@@ -135,6 +135,7 @@ class UserDisplayPanel(wx.Panel):
         port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown)
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Connect to port') #Select port button
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
+        Select_port.Bind(wx.EVT_BUTTON, self.onToggle)
         Disconnect_port = wx.Button(self, wx.ID_ANY, label = "Disconnect")
         Disconnect_port.Bind(wx.EVT_BUTTON, self.stop_serial) #Disconnect from serial port
         self.port_select_error = wx.StaticText(self, wx.ID_ANY, "") #Text area to display Port seletion error
@@ -248,8 +249,8 @@ class UserDisplayPanel(wx.Panel):
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update, self.timer)
  
-        self.toggleBtn = wx.Button(self, wx.ID_ANY, "Start")
-        self.toggleBtn.Bind(wx.EVT_BUTTON, self.onToggle)
+        #self.toggleBtn = wx.Button(self, wx.ID_ANY, "Start")
+        #self.toggleBtn.Bind(wx.EVT_BUTTON, self.onToggle)
 
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
@@ -271,22 +272,19 @@ class UserDisplayPanel(wx.Panel):
         
         UserDisplayPanel.port_to_connect = self.Port_dropdown.GetValue() #Get Value from the ComboBox
         if len(UserDisplayPanel.port_to_connect) < 1:
-            self.port_select_error.SetLabel("No port selected")
-
+            self.port_select_error.SetLabel("No port selected")  
         else:
             UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect #Run Opening Port from Serialfunctions.py document
             UserDisplayPanel.serial_port.serial_port_open(UserDisplayPanel.port_to_connect)     
             self.port_select_error.SetLabel("Port opened")
             #self.update_serial_display() 
             self.read_serial()
-    
+        event.Skip()
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
 
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
-        #while True:
-            #self.update_serial_display()
 
     def update_serial_display(self):
         """Function to update bottom panel display to current serial values"""
@@ -298,21 +296,24 @@ class UserDisplayPanel(wx.Panel):
         #Update for Temp value
         self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp)
 
-    def stop_serial(self, event):
+    def stop_serial(self,event):
         UserDisplayPanel.serial_port.close_serial()
 
 
         #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
     def onToggle(self, event):
         if self.timer.IsRunning():
+            self.stop_serial()
             self.timer.Stop()
-            self.toggleBtn.SetLabel("Start")
+            
+            #self.toggleBtn.SetLabel("Start")
             print "timer stopped!"
         else:
             print "starting timer..."
-            self.timer.Start(100)
-            self.toggleBtn.SetLabel("Stop")
- 
+            self.timer.Start(1000)
+            #self.toggleBtn.SetLabel("Stop")
+        event.Skip()
+
     def update(self, event):
         print "\nupdated: ",
         print time.ctime()
