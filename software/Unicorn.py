@@ -44,20 +44,8 @@ class MainApp(wx.Frame):
         wx.Frame.__init__(self, parent, title=title)
         self.Show(True)
 
-        #instantiate serial port class
-        #self.Panel_1 = UserDisplayPanel(myserialInstance)
-        #self.Panel_1 = UserDisplayPanel(self)
-        #self.Panel_1.set_Serial_Instance(self, myserialInstance)
-
-        #Redundant 
-        #Init Serial Handler class 
-        #serial_handler = SerialHandler(self)
-
         # Init UserDisplayPanel class
         self.Panel_1 = UserDisplayPanel(self)
-
-        # Send the comports list to the user display object Redundant? 
-        #self.Panel_1.choices = comports_Class.Comports 
         
         #Using BoxSizer in wxPython to layout UserDisplayPanel
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -149,7 +137,6 @@ class UserDisplayPanel(wx.Panel):
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
         self.port_select_error = wx.StaticText(self, wx.ID_ANY, "") #Text area to display Port seletion error
         self.port_select_error.SetFont(font2)
-        #Select_port.Bind(wx.EVT_BUTTON, self.on_timer)
 
         #Labels and values to update via logic for the current volt, current and temperature
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
@@ -280,14 +267,19 @@ class UserDisplayPanel(wx.Panel):
             UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect #Run Opening Port from Serialfunctions.py document
             UserDisplayPanel.serial_port.serial_port_open(UserDisplayPanel.port_to_connect)     
             self.port_select_error.SetLabel("Port opened")
-            #self.update_serial_display()   
-            t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data)            
-            t.start() 
-            
+            #self.update_serial_display() 
+            self.read_serial()
     
+    def read_serial(self):
+        """Function to start serial_data function in serialfunctions"""
+
+        t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
+        t.start()
+        update_serial_display()
+
     def update_serial_display(self):
         """Function to update bottom panel display to current serial values"""
-
+        
         #Update for volts value
         self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts)
         #Update for Amp value
