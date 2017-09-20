@@ -9,7 +9,7 @@ import sys
 import glob
 from serialfunctions import SerialPort
 import threading
-
+from DataObjects import DataObject
 
 #3 parts
 #1: User Display and interactions
@@ -36,7 +36,7 @@ ch.setLevel(logging.DEBUG)
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 logger.debug('Welcome to Power Supply Unicorn Tamer :)')
-
+ 
 #Initiation class
 class MainApp(wx.Frame):
     def __init__(self, parent, title):
@@ -61,7 +61,7 @@ class UserDisplayPanel(wx.Panel):
     
     # Class Variables
     serial_port = SerialPort()
- 
+    data_object = DataObject(volts= 0,amps= 0,temp= 0,port=1)
     port_to_connect = ""
 
     def __init__(self, parent):
@@ -157,6 +157,13 @@ class UserDisplayPanel(wx.Panel):
         self.Temp_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Temp")
         self.Temp_value_update.SetFont(font3)
         self.Temp_value_update.SetForegroundColour(wx.Colour(153,17,37))
+        self.volt_range = wx.StaticText(self, wx.ID_ANY, "")
+        self.volt_range.SetFont(font2)
+        self.amp_range = wx.StaticText(self, wx.ID_ANY, "")
+        self.amp_range.SetFont(font2)
+        self.temp_range = wx.StaticText(self, wx.ID_ANY, "")
+        self.temp_range.SetFont(font2)
+
 
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
@@ -220,16 +227,19 @@ class UserDisplayPanel(wx.Panel):
         Volts_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Volts_sizer.Add(volts_value, 0, wx.ALL, 5)   
         Volts_sizer.Add(self.volts_value_update,0,wx.ALL, 5)
+        Volts_sizer.Add(self.volt_range,0, wx.ALL,5)
 
         #Amp display sizer
         Amp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Amp_sizer.Add(Amps_value, 0, wx.ALL, 5)
         Amp_sizer.Add(self.Amps_value_update,0,wx.ALL, 5)
+        Amp_sizer.Add(self.amp_range,0, wx.ALL,5)
 
         #Temp display sizer
         Temp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Temp_sizer.Add(Temp_value, 0, wx.ALL, 5)
         Temp_sizer.Add(self.Temp_value_update, 0,wx.ALL, 5)
+        Temp_sizer.Add(self.temp_range,0, wx.ALL,5)
 
         #Adding Ports components, Volt display, Amp display and Temp display to BOTTOM Panel
         Bottom_panel_sizer.Add(ports_sizer, 0, wx.ALL|wx.EXPAND,5)
@@ -296,6 +306,15 @@ class UserDisplayPanel(wx.Panel):
         #Update for Temp value
         self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp)
 
+        #Update of range values
+        UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
+        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts)
+        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps)
+
+        #self.volt_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.volt_ranges)
+        #self.amp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.amp_ranges)
+        #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
+    
     def stop_serial(self,event):
         UserDisplayPanel.serial_port.close_serial()
 
@@ -303,7 +322,6 @@ class UserDisplayPanel(wx.Panel):
         #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
     def onToggle(self, event):
         if self.timer.IsRunning():
-            self.stop_serial()
             self.timer.Stop()
             
             #self.toggleBtn.SetLabel("Start")
@@ -326,47 +344,7 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Create log of values from serial in readable format
 #TODO: Add timer to show when program will end
 
-class DataObject(object):
-    """Class used to compare values coming from serial and determine
-     if they fall within the parameters specified by user input as well
-      as calculate values such as power from incoming values"""
-    
-    Index = 0 # Used to keep track of how many objects have been created
-    Vmax  = 20
-    Vmin  = 10
-    Amax  = 20
-    Amin  = 10
-    Tmax  = 100
-    Tmin  = 10
 
-    def __init__(volts, amps, temp, port=1):
-        """Class constructor"""
-        self.Volt = volts
-        self.Amps = amps
-        self.Temp = temp
-        self.Port = port
-        Index = Index+1 
-        
-    
-    def changeclassvariables(self):
-        #TODO
-        pass
-    
-
-    #Method to calculate power using voltage and amps coming from serial
-    def calculatepower (self, volts, amps):
-        power = float(self.Volts) * float(self.Amps)
-        return power
-
-    #Method to check if voltage falls within parameters
-    def checkerrorvoltage(self, volts):
-        if float(Vmin) > float(self.Volt) > float(Vmax):
-            print "error"
-    
-    #Method to check if current falls within parameters
-    def checkerrorcurrent(self, amps):
-        if float(Amin) > float(self.Amps) > float(Amax):
-            print "error"
     
 
 
