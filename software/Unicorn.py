@@ -352,7 +352,8 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Cut program off at user input timer
 #TODO: Change layout to user friendlyness
 #TODO: Add power value to user display
-#Create tryexcepts for values input by user
+#TODO: Create tryexcepts for values input by user
+
 
     
 
