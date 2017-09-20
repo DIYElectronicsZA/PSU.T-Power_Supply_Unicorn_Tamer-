@@ -243,7 +243,14 @@ class UserDisplayPanel(wx.Panel):
 
         #setup serial ports list: 
         self.refresh_dropdown(self)
-        
+
+        #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
+        self.timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self.update, self.timer)
+ 
+        self.toggleBtn = wx.Button(self, wx.ID_ANY, "Start")
+        self.toggleBtn.Bind(wx.EVT_BUTTON, self.onToggle)
+
         self.SetSizer(Overal_sizer)
         Overal_sizer.Fit(self)
         self.Centre()
@@ -293,6 +300,23 @@ class UserDisplayPanel(wx.Panel):
 
     def stop_serial(self, event):
         UserDisplayPanel.serial_port.close_serial()
+
+
+        #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
+    def onToggle(self, event):
+        if self.timer.IsRunning():
+            self.timer.Stop()
+            self.toggleBtn.SetLabel("Start")
+            print "timer stopped!"
+        else:
+            print "starting timer..."
+            self.timer.Start(100)
+            self.toggleBtn.SetLabel("Stop")
+ 
+    def update(self, event):
+        print "\nupdated: ",
+        print time.ctime()
+        self.update_serial_display()
 
 
 #TODO: update Bottom Panel labels to show current values
