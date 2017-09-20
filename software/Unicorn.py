@@ -348,7 +348,11 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format
 #TODO: Add timer to show when program will end
-
+#TODO: Link user inputs to allow manual adjustment of parameters
+#TODO: Cut program off at user input timer
+#TODO: Change layout to user friendlyness
+#TODO: Add power value to user display
+#Create tryexcepts for values input by user
 
     
 
