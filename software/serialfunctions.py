@@ -77,7 +77,7 @@ class SerialPort(object):
         #serial_lines = SerialPort.ser.readline()
         for serial_output in SerialPort.ser:
             try:
-                print serial_output
+                #print serial_output
                 serial_output = serial_output.split(',')
                 serial_list.append(serial_output)
                 serial_output[3] = serial_output[3].replace(';',"")
@@ -86,7 +86,7 @@ class SerialPort(object):
                 SerialPort.volts = serial_output[1]  
                 SerialPort.amps  = serial_output[2] 
                 SerialPort.temp  = serial_output[3]
-                print serial_output
+                #print serial_output
 
             except:
                 continue

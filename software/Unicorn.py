@@ -157,6 +157,7 @@ class UserDisplayPanel(wx.Panel):
         self.Temp_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Temp")
         self.Temp_value_update.SetFont(font3)
         self.Temp_value_update.SetForegroundColour(wx.Colour(153,17,37))
+
         self.volt_range = wx.StaticText(self, wx.ID_ANY, "")
         self.volt_range.SetFont(font2)
         self.amp_range = wx.StaticText(self, wx.ID_ANY, "")
@@ -290,9 +291,12 @@ class UserDisplayPanel(wx.Panel):
             #self.update_serial_display() 
             self.read_serial()
         event.Skip()
+
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
-
+        UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
+        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "")
+        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "")
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
 
@@ -307,20 +311,20 @@ class UserDisplayPanel(wx.Panel):
         self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp)
 
         #Update of range values
-        UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
-        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts)
-        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps)
+        
 
-        #self.volt_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.volt_ranges)
-        #self.amp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.amp_ranges)
+        self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
+        self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
         #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
     
     def stop_serial(self,event):
+        """function to stop serial connection"""
         UserDisplayPanel.serial_port.close_serial()
 
 
         #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
     def onToggle(self, event):
+        """Timer used to track serial"""
         if self.timer.IsRunning():
             self.timer.Stop()
             
@@ -338,8 +342,6 @@ class UserDisplayPanel(wx.Panel):
         self.update_serial_display()
 
 
-#TODO: update Bottom Panel labels to show current values
-#TODO: Create class (or function) to take value from serial and compare to Max and Min and give output
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format
 #TODO: Add timer to show when program will end
