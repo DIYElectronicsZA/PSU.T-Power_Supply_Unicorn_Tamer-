@@ -292,11 +292,13 @@ class UserDisplayPanel(wx.Panel):
             self.read_serial()
         event.Skip()
 
-    def read_serial(self):
-        """Function to start serial_data function in serialfunctions"""
+    def get_range_values(self):
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "")
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "")
+
+    def read_serial(self):
+        """Function to start serial_data function in serialfunctions"""
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
 
@@ -339,6 +341,7 @@ class UserDisplayPanel(wx.Panel):
     def update(self, event):
         print "\nupdated: ",
         print time.ctime()
+        self.get_range_values()
         self.update_serial_display()
 
 

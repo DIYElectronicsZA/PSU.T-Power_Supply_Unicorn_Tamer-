@@ -4,9 +4,9 @@ class DataObject(object):
       as calculate values such as power from incoming values"""
     
     Index = 0 # Used to keep track of how many objects have been created
-    Vmax  = 11
+    Vmax  = 15
     Vmin  = 10
-    Amax  = 11
+    Amax  = 15
     Amin  = 10
     Tmax  = 100
     Tmin  = 10
@@ -33,21 +33,18 @@ class DataObject(object):
 
     #Method to check if voltage falls within parameters
     def checkerrorvoltage(self, volts, volt_ranges):
-        if float(DataObject.Vmin) > float(volts) > float(DataObject.Vmax):
-            print "error"
-            DataObject.volt_ranges = "error"
-        else: 
-            print "in range"
-            DataObject.volt_ranges = "in range"
+        if float(DataObject.Vmin) > float(volts):
+            DataObject.volt_ranges = "Below range"
+        elif float(DataObject.Vmax) < float(volts):
+            DataObject.volt_ranges = "Above range"
+        else:
+            DataObject.volt_ranges = "In range"
+
     #Method to check if current falls within parameters
     def checkerrorcurrent(self, amps, amps_ranges):
-        amps_ranges = "1"
         if float(DataObject.Amin) > float(amps):
-            print "error"
-            DataObject.amps_ranges = "error"
-        elif float(amps)  > float(DataObject.Amax):
-            print "error"
-            DataObject.amps_ranges = "error"
-        else: 
-            print "in range"
-            DataObject.amps_ranges = "in range"
+            DataObject.amps_ranges = "Below range"
+        elif float(DataObject.Amax) < float(amps):
+            DataObject.amps_ranges = "Above range"
+        else:
+            DataObject.amps_ranges = "In range"
