@@ -72,25 +72,32 @@ class SerialPort(object):
 
     #reading serial and parsing values
     def serial_data(self):
-
+        
         serial_list = []
         #serial_lines = SerialPort.ser.readline()
         for serial_output in SerialPort.ser:
             try:
-                #print serial_output
-                serial_output = serial_output.split(',')
-                serial_list.append(serial_output)
-                serial_output[3] = serial_output[3].replace(';',"")
-                serial_output[3] = serial_output[3].strip('\r\n')
-                SerialPort.port  = serial_output[0]
-                SerialPort.volts = serial_output[1]  
-                SerialPort.amps  = serial_output[2] 
-                SerialPort.temp  = serial_output[3]
-                #print serial_output
-
+                channels = int(serial_output[0])
             except:
                 continue
-    
+            if channels == 1:
+                try:
+                    #print serial_output
+                    serial_output = serial_output.split(',')
+                    serial_list.append(serial_output)
+                    serial_output[3] = serial_output[3].replace(';',"")
+                    serial_output[3] = serial_output[3].strip('\r\n')
+                    SerialPort.port  = serial_output[0]
+                    SerialPort.volts = serial_output[1]  
+                    SerialPort.amps  = serial_output[2] 
+                    SerialPort.temp  = serial_output[3]
+                    #print serial_output
+
+                except:
+                    continue
+            else:
+                continue
+
 
     #close serial
     def close_serial(self):

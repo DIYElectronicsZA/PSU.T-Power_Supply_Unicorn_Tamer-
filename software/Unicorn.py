@@ -353,7 +353,7 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Change layout to user friendlyness
 #TODO: Add power value to user display
 #TODO: Create tryexcepts for values input by user
-
+#TODO: Allow user to save txt file of log
 
     
 
