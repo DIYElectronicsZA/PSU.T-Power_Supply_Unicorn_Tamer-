@@ -13,6 +13,7 @@ class DataObject(object):
     volt_ranges = "nothing"
     amps_ranges = "nothing"
     temp_ranges = "nothing"
+    power = ""
     def __init__(self,volts, amps, temp, port=1):
         """Class constructor"""
         self.Volt = volts
@@ -29,9 +30,10 @@ class DataObject(object):
 
     #Method to calculate power using voltage and amps coming from serial
     def calculatepower (self, volts, amps):
-        power = float(volts) * float(amps)
+        DataObject.power = float(volts) * float(amps)
+        DataObject.power = str(DataObject.power)
         fp = open('powervalue.txt', 'a')
-        fp.write(str(power))
+        fp.write(str(DataObject.power))
         fp.write('\n')
         fp.close()
 

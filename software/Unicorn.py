@@ -329,13 +329,16 @@ class UserDisplayPanel(wx.Panel):
         self.Amps_value_update.SetLabel(UserDisplayPanel.serial_port.amps)
         #Update for Temp value
         self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp)
-
+        #Update power value
+        self.power_value_update.SetLabel(UserDisplayPanel.data_object.power)
         #Update of range values
         
 
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
         #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
+
+       
     
     def stop_serial(self,event):
         """function to stop serial connection"""
