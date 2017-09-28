@@ -33,6 +33,10 @@ class SerialPort(object):
     volts   = '0'
     amps    = '0'
     temp    = '0'
+    port2    = ''
+    volts2   = '0'
+    amps2    = '0'
+    temp2    = '0'
     #Listing available ports for serial
     def serial_ports_list(self):
         """ Lists serial port names
@@ -91,6 +95,21 @@ class SerialPort(object):
                     SerialPort.volts = serial_output[1]  
                     SerialPort.amps  = serial_output[2] 
                     SerialPort.temp  = serial_output[3]
+                    #print serial_output
+
+                except:
+                    continue
+            if channels == 2:
+                try:
+                    #print serial_output
+                    serial_output = serial_output.split(',')
+                    serial_list.append(serial_output)
+                    serial_output[3] = serial_output[3].replace(';',"")
+                    serial_output[3] = serial_output[3].strip('\r\n')
+                    SerialPort.port2  = serial_output[0]
+                    SerialPort.volts2 = serial_output[1]  
+                    SerialPort.amps2  = serial_output[2] 
+                    SerialPort.temp2  = serial_output[3]
                     #print serial_output
 
                 except:

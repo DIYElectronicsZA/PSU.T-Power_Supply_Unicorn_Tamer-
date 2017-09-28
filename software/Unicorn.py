@@ -145,19 +145,29 @@ class UserDisplayPanel(wx.Panel):
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
         volts_value.SetFont(font2)
         self.volts_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Volts")
+        self.volts_value_update_2 = wx.StaticText(self, wx.ID_ANY, "Serial Volts 2")
         self.volts_value_update.SetFont(font3)
+        self.volts_value_update_2.SetFont(font3)
         self.volts_value_update.SetForegroundColour(wx.Colour(153,17,37))
         Amps_value = wx.StaticText(self, wx.ID_ANY, "Current Amps:")
         Amps_value.SetFont(font2)
         self.Amps_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Amps")
+        self.Amps_value_update_2 = wx.StaticText(self, wx.ID_ANY, "Serial Amps 2")
         self.Amps_value_update.SetFont(font3)
+        self.Amps_value_update_2.SetFont(font3)
         self.Amps_value_update.SetForegroundColour(wx.Colour(153,17,37))
         Temp_value = wx.StaticText(self, wx.ID_ANY, "Current Temp:")
         Temp_value.SetFont(font2)
         self.Temp_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Temp")
+        self.Temp_value_update_2 = wx.StaticText(self, wx.ID_ANY, "Serial Temp 2")
         self.Temp_value_update.SetFont(font3)
+        self.Temp_value_update_2.SetFont(font3)
         self.Temp_value_update.SetForegroundColour(wx.Colour(153,17,37))
-
+        Power_value = wx.StaticText(self, wx.ID_ANY, "Current Power")
+        Power_value.SetFont(font2)
+        self.power_value_update = wx.StaticText(self, wx.ID_ANY, "Power Output")
+        self.power_value_update.SetFont(font3)
+        self.power_value_update.SetForegroundColour(wx.Colour(153,17,37))
         self.volt_range = wx.StaticText(self, wx.ID_ANY, "")
         self.volt_range.SetFont(font2)
         self.amp_range = wx.StaticText(self, wx.ID_ANY, "")
@@ -229,18 +239,25 @@ class UserDisplayPanel(wx.Panel):
         Volts_sizer.Add(volts_value, 0, wx.ALL, 5)   
         Volts_sizer.Add(self.volts_value_update,0,wx.ALL, 5)
         Volts_sizer.Add(self.volt_range,0, wx.ALL,5)
+        Volts_sizer.Add(self.volts_value_update_2,0,wx.ALL, 5)
 
         #Amp display sizer
         Amp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Amp_sizer.Add(Amps_value, 0, wx.ALL, 5)
         Amp_sizer.Add(self.Amps_value_update,0,wx.ALL, 5)
         Amp_sizer.Add(self.amp_range,0, wx.ALL,5)
+        Amp_sizer.Add(self.Amps_value_update_2,0,wx.ALL, 5)
 
         #Temp display sizer
         Temp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Temp_sizer.Add(Temp_value, 0, wx.ALL, 5)
         Temp_sizer.Add(self.Temp_value_update, 0,wx.ALL, 5)
         Temp_sizer.Add(self.temp_range,0, wx.ALL,5)
+        Temp_sizer.Add(self.Temp_value_update_2,0,wx.ALL, 5)
+
+        power_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        power_sizer.Add(Power_value, 0 , wx.ALL, 5)
+        power_sizer.Add(self.power_value_update,0 , wx.ALL, 5)
 
         #Adding Ports components, Volt display, Amp display and Temp display to BOTTOM Panel
         Bottom_panel_sizer.Add(ports_sizer, 0, wx.ALL|wx.EXPAND,5)
@@ -248,6 +265,7 @@ class UserDisplayPanel(wx.Panel):
         Bottom_panel_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND , 5)
         Bottom_panel_sizer.Add(Amp_sizer, 0, wx.ALL| wx.EXPAND , 5)
         Bottom_panel_sizer.Add(Temp_sizer, 0, wx.ALL| wx.EXPAND , 5)
+        Bottom_panel_sizer.Add(power_sizer, 0, wx.ALL| wx.EXPAND , 5)
 
         #Adding Top and Bottom sizers to the overall sizer
         Overal_sizer.Add(Top_panel_sizer,0, wx.ALL|wx.CENTER, 5)
