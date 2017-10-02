@@ -239,33 +239,46 @@ class UserDisplayPanel(wx.Panel):
         Volts_sizer.Add(volts_value, 0, wx.ALL, 5)   
         Volts_sizer.Add(self.volts_value_update,0,wx.ALL, 5)
         Volts_sizer.Add(self.volt_range,0, wx.ALL,5)
-        Volts_sizer.Add(self.volts_value_update_2,0,wx.ALL, 5)
+        Volts_sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        Volts_sizer_2.Add(self.volts_value_update_2,0,wx.ALL, 5)
 
         #Amp display sizer
         Amp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Amp_sizer.Add(Amps_value, 0, wx.ALL, 5)
         Amp_sizer.Add(self.Amps_value_update,0,wx.ALL, 5)
         Amp_sizer.Add(self.amp_range,0, wx.ALL,5)
-        Amp_sizer.Add(self.Amps_value_update_2,0,wx.ALL, 5)
+        Amp_sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        Amp_sizer_2.Add(self.Amps_value_update_2,0,wx.ALL, 5)
 
         #Temp display sizer
         Temp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Temp_sizer.Add(Temp_value, 0, wx.ALL, 5)
         Temp_sizer.Add(self.Temp_value_update, 0,wx.ALL, 5)
         Temp_sizer.Add(self.temp_range,0, wx.ALL,5)
-        Temp_sizer.Add(self.Temp_value_update_2,0,wx.ALL, 5)
+        Temp_sizer_2= wx.BoxSizer(wx.HORIZONTAL)
+        Temp_sizer_2.Add(self.Temp_value_update_2,0,wx.ALL, 5)
 
         power_sizer = wx.BoxSizer(wx.HORIZONTAL)
         power_sizer.Add(Power_value, 0 , wx.ALL, 5)
         power_sizer.Add(self.power_value_update,0 , wx.ALL, 5)
 
+        channel1_sizer = wx.BoxSizer(wx.VERTICAL)
+        channel1_sizer.Add(Volts_sizer, 0, wx.ALL, 5)
+        channel1_sizer.Add(Amp_sizer,0, wx.ALL,5)
+        channel1_sizer.Add(Temp_sizer,0, wx.ALL,5)
+        channel1_sizer.Add(power_sizer,0 , wx.ALL,5)
+
+        channel2_sizer = wx.BoxSizer(wx.VERTICAL)
+        channel2_sizer.Add(Volts_sizer_2, 0, wx.ALL, 5)
+        channel2_sizer.Add(Amp_sizer_2,0, wx.ALL,5)
+        channel2_sizer.Add(Temp_sizer_2,0, wx.ALL,5)   
         #Adding Ports components, Volt display, Amp display and Temp display to BOTTOM Panel
+        combo_channel_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        combo_channel_sizer.Add(channel1_sizer,0,wx.ALL|wx.EXPAND,5)
+        combo_channel_sizer.Add(channel2_sizer, 0, wx.ALL|wx.EXPAND,5)
         Bottom_panel_sizer.Add(ports_sizer, 0, wx.ALL|wx.EXPAND,5)
         Bottom_panel_sizer.Add(ports_selection_sizer, 0, wx.CENTER,5)
-        Bottom_panel_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND , 5)
-        Bottom_panel_sizer.Add(Amp_sizer, 0, wx.ALL| wx.EXPAND , 5)
-        Bottom_panel_sizer.Add(Temp_sizer, 0, wx.ALL| wx.EXPAND , 5)
-        Bottom_panel_sizer.Add(power_sizer, 0, wx.ALL| wx.EXPAND , 5)
+        Bottom_panel_sizer.Add(combo_channel_sizer,0, wx.ALL|wx.EXPAND,5)
 
         #Adding Top and Bottom sizers to the overall sizer
         Overal_sizer.Add(Top_panel_sizer,0, wx.ALL|wx.CENTER, 5)
@@ -315,6 +328,10 @@ class UserDisplayPanel(wx.Panel):
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "")
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "")
 
+        UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
+        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "")
+        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "")
+
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
@@ -332,7 +349,12 @@ class UserDisplayPanel(wx.Panel):
         #Update power value
         self.power_value_update.SetLabel(UserDisplayPanel.data_object.power)
         #Update of range values
-        
+        #Update for volts value
+        self.volts_value_update_2.SetLabel(UserDisplayPanel.serial_port.volts2)
+        #Update for Amp value
+        self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2)
+        #Update for Temp value
+        self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2)
 
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
