@@ -2,8 +2,9 @@ import logging
 import sys
 import serial
 
-#Setup Debug Logging 
-#From https://inventwithpython.com/blog/2012/04/06/stop-using-print-for-debugging-a-5-minute-quickstart-guide-to-pythons-logging-module/
+#Setup Debug Logging
+#From https://inventwithpython.com/blog/2012/04/06/stop-using
+# -print-for-debugging-a-5-minute-quickstart-guide-to-pythons-logging-module/
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
@@ -28,11 +29,11 @@ class SerialPort(object):
     """Class containing functions to list available Comports,
     Open a serial port, close a serial port and read data from a serial port"""
     Comlist = []
-    ser     = ""
-    port    = ''
-    volts   = '0'
-    amps    = '0'
-    temp    = '0'
+    ser      = ""
+    port     = ''
+    volts    = '0'
+    amps     = '0'
+    temp     = '0'
     port2    = ''
     volts2   = '0'
     amps2    = '0'
@@ -75,8 +76,7 @@ class SerialPort(object):
         SerialPort.ser.open()
 
     #reading serial and parsing values
-    def serial_data(self):
-        
+    def serial_data(self):        
         serial_list = []
         #serial_lines = SerialPort.ser.readline()
         for serial_output in SerialPort.ser:
@@ -89,11 +89,11 @@ class SerialPort(object):
                     #print serial_output
                     serial_output = serial_output.split(',')
                     serial_list.append(serial_output)
-                    serial_output[3] = serial_output[3].replace(';',"")
+                    serial_output[3] = serial_output[3].replace(';', "")
                     serial_output[3] = serial_output[3].strip('\r\n')
                     SerialPort.port  = serial_output[0]
-                    SerialPort.volts = serial_output[1]  
-                    SerialPort.amps  = serial_output[2] 
+                    SerialPort.volts = serial_output[1]
+                    SerialPort.amps  = serial_output[2]
                     SerialPort.temp  = serial_output[3]
                     #print serial_output
 

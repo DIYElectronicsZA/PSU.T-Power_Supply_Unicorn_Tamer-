@@ -90,39 +90,39 @@ class UserDisplayPanel(wx.Panel):
         #Min and Max Voltage label and text control input for parameters in logic
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
         Min_volt_label.SetFont(font2)
-        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "1")
+        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "11")
 
         Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage  ")
         Max_volt_label.SetFont(font2)
-        self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "2")
+        self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "13")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         #Min and Max Current label and text control input for parameters in logic
         Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
         Min_Amp_label.SetFont(font2)
-        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "3")
+        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "8")
 
         Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current   ")
         Max_Amp_label.SetFont(font2)
-        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "4")
+        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "12")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         ##Min and Max Temperature label and text control input for parameters in logic
         Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C)")
         Min_temp_label.SetFont(font2)
-        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "5")
+        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "40")
 
         Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C)")
         Max_temp_label.SetFont(font2)
-        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
+        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "10")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         #Start/Stop button to start or end the program
         Start_Stop_button = wx.Button(self, label = "Submit")
-        #Start_Stop_button.Bind(wx.EVT_BUTTON, self.Saving_inputs)
+        Start_Stop_button.Bind(wx.EVT_BUTTON, self.update_range_values)
         Start_Stop_button.SetForegroundColour(wx.Colour(245,245,245))
         Start_Stop_button.SetFont(font3)
         Start_Stop_button.SetBackgroundColour('#000000')
@@ -298,6 +298,21 @@ class UserDisplayPanel(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+    def update_range_values(self,event):
+        """Function to get values entered by user and use as values for ranges"""
+        max_volts = self.Max_volt_input.GetValue()
+        UserDisplayPanel.data_object.Vmax = max_volts
+        min_volts = self.Min_volt_input.GetValue()
+        UserDisplayPanel.data_object.Vmin = min_volts
+        max_amps = self.Max_Amp_input.GetValue()
+        UserDisplayPanel.data_object.Amax = max_amps
+        min_amps = self.Min_Amp_input.GetValue()
+        UserDisplayPanel.data_object.Amin = min_amps
+        max_temp = self.Max_temp_input.GetValue()
+        UserDisplayPanel.data_object.Tmax = max_temp
+        min_temp = self.Min_temp_input.GetValue()
+        UserDisplayPanel.data_object.Tmin = min_temp
+
     def refresh_dropdown(self,event):
         ''' Method to refresh the list showing in the combobox found in the Bottom Panel in UserDisplayPanel ''' 
         
@@ -386,7 +401,9 @@ class UserDisplayPanel(wx.Panel):
         print time.ctime()
         self.get_range_values()
         self.update_serial_display()
-
+    def on_close(self,event):
+        """When x button is clicked closes serial port as well"""
+        
 
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format
