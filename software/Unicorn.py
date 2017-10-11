@@ -10,6 +10,7 @@ import glob
 from serialfunctions import SerialPort
 import threading
 from DataObjects import DataObject
+#-*- coding: utf-8 -*-
 
 #3 parts
 #1: User Display and interactions
@@ -54,6 +55,7 @@ class MainApp(wx.Frame):
         self.SetBackgroundColour('#E2E3F3')
         self.Fit ()
         self.Centre()
+        self.Maximize(True)
 
 
 #Visual display for users made up of two panels
@@ -63,6 +65,7 @@ class UserDisplayPanel(wx.Panel):
     serial_port = SerialPort()
     data_object = DataObject(volts= 0,amps= 0,temp= 0,port=1)
     port_to_connect = ""
+    time = 0
 
     def __init__(self, parent):
         """Class Constructor"""
@@ -90,42 +93,42 @@ class UserDisplayPanel(wx.Panel):
         #Min and Max Voltage label and text control input for parameters in logic
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
         Min_volt_label.SetFont(font2)
-        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "1")
+        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "11")
 
         Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage  ")
         Max_volt_label.SetFont(font2)
-        self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "2")
+        self.Max_volt_input = wx.TextCtrl(self, wx.ID_ANY, "13")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         #Min and Max Current label and text control input for parameters in logic
         Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
         Min_Amp_label.SetFont(font2)
-        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "3")
+        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "8")
 
         Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current   ")
         Max_Amp_label.SetFont(font2)
-        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "4")
+        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "12")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         ##Min and Max Temperature label and text control input for parameters in logic
         Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C)")
         Min_temp_label.SetFont(font2)
-        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "5")
+        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "40")
 
         Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C)")
         Max_temp_label.SetFont(font2)
-        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "6")
+        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "10")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         #Start/Stop button to start or end the program
-        Start_Stop_button = wx.Button(self, label = "Submit")
-        #Start_Stop_button.Bind(wx.EVT_BUTTON, self.Saving_inputs)
-        Start_Stop_button.SetForegroundColour(wx.Colour(245,245,245))
-        Start_Stop_button.SetFont(font3)
-        Start_Stop_button.SetBackgroundColour('#000000')
+        #Start_Stop_button = wx.Button(self, label = "Submit")
+        #Start_Stop_button.Bind(wx.EVT_BUTTON, self.update_range_values)
+        #Start_Stop_button.SetForegroundColour(wx.Colour(245,245,245))
+        #Start_Stop_button.SetFont(font3)
+        #Start_Stop_button.SetBackgroundColour('#000000')
 
         #Labels, combobox and button for selecting port
         Ports = wx.StaticText(self, wx.ID_ANY, "Available Ports") #Label for available ports
@@ -142,22 +145,38 @@ class UserDisplayPanel(wx.Panel):
         self.port_select_error.SetFont(font2)
 
         #Labels and values to update via logic for the current volt, current and temperature
+        error_marker = wx.StaticText(self, wx.ID_ANY, "Number of errors: ")
+        self.error_marker_update = wx.StaticText(self, wx.ID_ANY, "0")
+        error_marker.SetFont(font2)
+        self.error_marker_update2 = wx.StaticText(self, wx.ID_ANY, "0")
+        self.error_marker_update.SetFont(font3)
+        self.error_marker_update2.SetFont(font3)
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
         volts_value.SetFont(font2)
         self.volts_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Volts")
+        self.volts_value_update_2 = wx.StaticText(self, wx.ID_ANY, "Serial Volts 2")
         self.volts_value_update.SetFont(font3)
+        self.volts_value_update_2.SetFont(font3)
         self.volts_value_update.SetForegroundColour(wx.Colour(153,17,37))
         Amps_value = wx.StaticText(self, wx.ID_ANY, "Current Amps:")
         Amps_value.SetFont(font2)
         self.Amps_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Amps")
+        self.Amps_value_update_2 = wx.StaticText(self, wx.ID_ANY, "Serial Amps 2")
         self.Amps_value_update.SetFont(font3)
+        self.Amps_value_update_2.SetFont(font3)
         self.Amps_value_update.SetForegroundColour(wx.Colour(153,17,37))
         Temp_value = wx.StaticText(self, wx.ID_ANY, "Current Temp:")
         Temp_value.SetFont(font2)
         self.Temp_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Temp")
+        self.Temp_value_update_2 = wx.StaticText(self, wx.ID_ANY, "Serial Temp 2")
         self.Temp_value_update.SetFont(font3)
+        self.Temp_value_update_2.SetFont(font3)
         self.Temp_value_update.SetForegroundColour(wx.Colour(153,17,37))
-
+        Power_value = wx.StaticText(self, wx.ID_ANY, "Current Power: ")
+        Power_value.SetFont(font2)
+        self.power_value_update = wx.StaticText(self, wx.ID_ANY, "Power Output")
+        self.power_value_update.SetFont(font3)
+        self.power_value_update.SetForegroundColour(wx.Colour(153,17,37))
         self.volt_range = wx.StaticText(self, wx.ID_ANY, "")
         self.volt_range.SetFont(font2)
         self.amp_range = wx.StaticText(self, wx.ID_ANY, "")
@@ -203,7 +222,7 @@ class UserDisplayPanel(wx.Panel):
         
         #Start/stop sizer
         Start_stop_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        Start_stop_sizer.Add(Start_Stop_button, 0, wx.ALL,5)
+        #Start_stop_sizer.Add(Start_Stop_button, 0, wx.ALL,5)
         
         #Adding Setting, time, voltage, current, temperature inputs into TOP panel
         Top_panel_sizer.Add(Setting_sizer, 0, wx.ALL|wx.CENTER, 5)
@@ -229,25 +248,55 @@ class UserDisplayPanel(wx.Panel):
         Volts_sizer.Add(volts_value, 0, wx.ALL, 5)   
         Volts_sizer.Add(self.volts_value_update,0,wx.ALL, 5)
         Volts_sizer.Add(self.volt_range,0, wx.ALL,5)
+        Volts_sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        Volts_sizer_2.Add(self.volts_value_update_2,0,wx.ALL, 5)
 
         #Amp display sizer
         Amp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Amp_sizer.Add(Amps_value, 0, wx.ALL, 5)
         Amp_sizer.Add(self.Amps_value_update,0,wx.ALL, 5)
         Amp_sizer.Add(self.amp_range,0, wx.ALL,5)
+        Amp_sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        Amp_sizer_2.Add(self.Amps_value_update_2,0,wx.ALL, 5)
 
         #Temp display sizer
         Temp_sizer = wx.BoxSizer(wx.HORIZONTAL)
         Temp_sizer.Add(Temp_value, 0, wx.ALL, 5)
         Temp_sizer.Add(self.Temp_value_update, 0,wx.ALL, 5)
         Temp_sizer.Add(self.temp_range,0, wx.ALL,5)
+        Temp_sizer_2= wx.BoxSizer(wx.HORIZONTAL)
+        Temp_sizer_2.Add(self.Temp_value_update_2,0,wx.ALL, 5)
 
+        power_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        power_sizer.Add(Power_value, 0 , wx.ALL, 5)
+        power_sizer.Add(self.power_value_update,0 , wx.ALL, 5)
+
+        error_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        error_sizer.Add(error_marker, 0, wx.ALL, 5)
+        error_sizer.Add(self.error_marker_update,0, wx.ALL,5)
+
+        channel1_sizer = wx.BoxSizer(wx.VERTICAL)
+        channel1_sizer.Add(error_sizer, 0 ,wx.ALL|wx.EXPAND,5)
+        channel1_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND, 5)
+        channel1_sizer.Add(Amp_sizer,0, wx.ALL|wx.EXPAND,5)
+        channel1_sizer.Add(Temp_sizer,0, wx.ALL|wx.EXPAND,5)
+        channel1_sizer.Add(power_sizer,0 , wx.ALL|wx.EXPAND,5)
+
+        error_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        error_sizer2.Add(self.error_marker_update2,0, wx.ALL,5)
+
+        channel2_sizer = wx.BoxSizer(wx.VERTICAL)
+        channel2_sizer.Add(error_sizer2,0, wx.ALL,5)
+        channel2_sizer.Add(Volts_sizer_2, 0, wx.ALL, 5)
+        channel2_sizer.Add(Amp_sizer_2,0, wx.ALL,5)
+        channel2_sizer.Add(Temp_sizer_2,0, wx.ALL,5)   
         #Adding Ports components, Volt display, Amp display and Temp display to BOTTOM Panel
+        combo_channel_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        combo_channel_sizer.Add(channel1_sizer,0,wx.ALL|wx.EXPAND,5)
+        combo_channel_sizer.Add(channel2_sizer, 0, wx.ALL|wx.EXPAND,5)
         Bottom_panel_sizer.Add(ports_sizer, 0, wx.ALL|wx.EXPAND,5)
         Bottom_panel_sizer.Add(ports_selection_sizer, 0, wx.CENTER,5)
-        Bottom_panel_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND , 5)
-        Bottom_panel_sizer.Add(Amp_sizer, 0, wx.ALL| wx.EXPAND , 5)
-        Bottom_panel_sizer.Add(Temp_sizer, 0, wx.ALL| wx.EXPAND , 5)
+        Bottom_panel_sizer.Add(combo_channel_sizer,0, wx.ALL|wx.EXPAND,5)
 
         #Adding Top and Bottom sizers to the overall sizer
         Overal_sizer.Add(Top_panel_sizer,0, wx.ALL|wx.CENTER, 5)
@@ -267,6 +316,23 @@ class UserDisplayPanel(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+    def update_range_values(self,event):
+        """Function to get values entered by user and use as values for ranges"""
+        max_volts = self.Max_volt_input.GetValue()
+        UserDisplayPanel.data_object.Vmax = max_volts
+        min_volts = self.Min_volt_input.GetValue()
+        UserDisplayPanel.data_object.Vmin = min_volts
+        max_amps = self.Max_Amp_input.GetValue()
+        UserDisplayPanel.data_object.Amax = max_amps
+        min_amps = self.Min_Amp_input.GetValue()
+        UserDisplayPanel.data_object.Amin = min_amps
+        max_temp = self.Max_temp_input.GetValue()
+        UserDisplayPanel.data_object.Tmax = max_temp
+        min_temp = self.Min_temp_input.GetValue()
+        UserDisplayPanel.data_object.Tmin = min_temp
+        UserDisplayPanel.time = self.Time_input.GetValue()
+        print UserDisplayPanel.time
+        event.Skip()
     def refresh_dropdown(self,event):
         ''' Method to refresh the list showing in the combobox found in the Bottom Panel in UserDisplayPanel ''' 
         
@@ -280,7 +346,6 @@ class UserDisplayPanel(wx.Panel):
     def select_port(self,event):
         """Method to connect to a User selected port, ifelse statement to ensure a port is selected"""
         #t = Timer(10.0, self.port_select_error.SetLabel("") )
-        
         UserDisplayPanel.port_to_connect = self.Port_dropdown.GetValue() #Get Value from the ComboBox
         if len(UserDisplayPanel.port_to_connect) < 1:
             self.port_select_error.SetLabel("No port selected")  
@@ -297,6 +362,10 @@ class UserDisplayPanel(wx.Panel):
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "")
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "")
 
+        UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
+        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "")
+        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "")
+
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
@@ -304,20 +373,27 @@ class UserDisplayPanel(wx.Panel):
 
     def update_serial_display(self):
         """Function to update bottom panel display to current serial values"""
-        
         #Update for volts value
-        self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts)
+        self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts + " V")
         #Update for Amp value
-        self.Amps_value_update.SetLabel(UserDisplayPanel.serial_port.amps)
+        self.Amps_value_update.SetLabel(UserDisplayPanel.serial_port.amps + " A")
         #Update for Temp value
-        self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp)
-
+        self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp + u"\N{DEGREE SIGN}" + "C")
+        #Update power value
+        self.power_value_update.SetLabel(UserDisplayPanel.data_object.power)
         #Update of range values
-        
+        #Update for volts value
+        self.volts_value_update_2.SetLabel(UserDisplayPanel.serial_port.volts2 + " V")
+        #Update for Amp value
+        self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2 + " A")
+        #Update for Temp value
+        self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
 
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
         #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
+
+       
     
     def stop_serial(self,event):
         """function to stop serial connection"""
@@ -343,7 +419,9 @@ class UserDisplayPanel(wx.Panel):
         print time.ctime()
         self.get_range_values()
         self.update_serial_display()
-
+    def on_close(self,event):
+        """When x button is clicked closes serial port as well"""
+        
 
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format
@@ -352,7 +430,8 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Cut program off at user input timer
 #TODO: Change layout to user friendlyness
 #TODO: Add power value to user display
-#Create tryexcepts for values input by user
+#TODO: Create tryexcepts for values input by user
+#TODO: Allow user to save txt file of log
 
     
 
