@@ -95,7 +95,7 @@ class SerialPort(object):
                     SerialPort.volts = serial_output[1]
                     SerialPort.amps  = serial_output[2]
                     SerialPort.temp  = serial_output[3]
-                    #print serial_output
+                    print serial_output
 
                 except:
                     continue
@@ -110,7 +110,7 @@ class SerialPort(object):
                     SerialPort.volts2 = serial_output[1]  
                     SerialPort.amps2  = serial_output[2] 
                     SerialPort.temp2  = serial_output[3]
-                    #print serial_output
+                    print serial_output
 
                 except:
                     continue
@@ -121,6 +121,7 @@ class SerialPort(object):
     #close serial
     def close_serial(self):
         """Function to close serial port connection"""
-        SerialPort.ser.close()
-
-print "Kill me BEN!"
+        try:
+            SerialPort.ser.close()
+        except:
+            print "Kill me BEN!"
