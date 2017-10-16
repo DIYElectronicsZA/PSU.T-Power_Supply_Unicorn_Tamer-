@@ -12,6 +12,7 @@ class DataObject(object):
     Amin  = 8
     Tmax  = 40
     Tmin  = 10
+    error_marker = 0
     volt_ranges = "nothing"
     amps_ranges = "nothing"
     temp_ranges = "nothing"
@@ -48,6 +49,7 @@ class DataObject(object):
         f = open('voltsvalue.txt', 'a')
         if float(DataObject.Vmin) > float(volts):
             DataObject.volt_ranges = "Below range"
+            DataObject.error_marker = DataObject.error_marker + 1
             f.write(volts)
             f.write(" Below range ")
             f.write(' ')
@@ -55,6 +57,7 @@ class DataObject(object):
             f.write('\n')
         elif float(DataObject.Vmax) < float(volts):
             DataObject.volt_ranges = "Above range"
+            DataObject.error_marker = DataObject.error_marker + 1
             f.write(volts)
             f.write(" Above range ")
             f.write(' ')
@@ -70,16 +73,19 @@ class DataObject(object):
         f = open('ampssvalue.txt', 'a')
         if float(DataObject.Amin) > float(amps):
             DataObject.amps_ranges = "Below range"
+            DataObject.error_marker = DataObject.error_marker + 1
             f.write(amps)
             f.write(" Below range ")
             f.write(timestr)
             f.write('\n')
         elif float(DataObject.Amax) < float(amps):
             DataObject.amps_ranges = "Above range"
+            DataObject.error_marker = DataObject.error_marker + 1
             f.write(amps)
             f.write(" Above range ")
             f.write(timestr)
             f.write('\n')
+            print DataObject.error_marker
         else:
             DataObject.amps_ranges = "In range"
         f.close()

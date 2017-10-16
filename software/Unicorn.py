@@ -183,8 +183,9 @@ class UserDisplayPanel(wx.Panel):
         self.amp_range.SetFont(font2)
         self.temp_range = wx.StaticText(self, wx.ID_ANY, "")
         self.temp_range.SetFont(font2)
-
-
+        self.Bind(wx.EVT_CLOSE, UserDisplayPanel.stop_serial)
+        self.Bind(wx.EVT_CLOSE, UserDisplayPanel.on_close)
+        
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
         Top_panel_sizer    = wx.BoxSizer(wx.VERTICAL) #Sizer for top half of overall sizer
@@ -316,6 +317,10 @@ class UserDisplayPanel(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+    def on_close(self, event):
+        sys.exit()
+        event.Skip()
+
     def update_range_values(self,event):
         """Function to get values entered by user and use as values for ranges"""
         max_volts = self.Max_volt_input.GetValue()
@@ -388,7 +393,7 @@ class UserDisplayPanel(wx.Panel):
         self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2 + " A")
         #Update for Temp value
         self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
-
+        self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
         #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
@@ -398,8 +403,7 @@ class UserDisplayPanel(wx.Panel):
     def stop_serial(self,event):
         """function to stop serial connection"""
         UserDisplayPanel.serial_port.close_serial()
-
-
+        event.Skip()
         #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
     def onToggle(self, event):
         """Timer used to track serial"""
@@ -419,17 +423,14 @@ class UserDisplayPanel(wx.Panel):
         print time.ctime()
         self.get_range_values()
         self.update_serial_display()
-    def on_close(self,event):
-        """When x button is clicked closes serial port as well"""
+
         
 
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format
 #TODO: Add timer to show when program will end
-#TODO: Link user inputs to allow manual adjustment of parameters
 #TODO: Cut program off at user input timer
 #TODO: Change layout to user friendlyness
-#TODO: Add power value to user display
 #TODO: Create tryexcepts for values input by user
 #TODO: Allow user to save txt file of log
 
