@@ -1,10 +1,8 @@
 import time
 class DataObject(object):
-    
     """Class used to compare values coming from serial and determine
      if they fall within the parameters specified by user input as well
-      as calculate values such as power from incoming values"""
-    
+      as calculate values such as power from incoming values"""   
     Index = 0 # Used to keep track of how many objects have been created
     Vmax  = 13
     Vmin  = 11
@@ -17,14 +15,13 @@ class DataObject(object):
     amps_ranges = "nothing"
     temp_ranges = "nothing"
     power = ""
-    def __init__(self,volts, amps, temp, port=1):
+    def __init__(self, volts, amps, temp, port=1):
         """Class constructor"""
         self.Volt = volts
         self.Amps = amps
         self.Temp = temp
         self.Port = port
-        #Index = Index+1 
-        
+        #Index = Index+1        
     
     def changeclassvariables(self):
         #TODO
@@ -96,5 +93,6 @@ class DataObject(object):
         elif float(DataObject.Tmax) < float(temp):
             DataObject.temp_ranges = "Above range"
         else:
-            DataObject.temp_ranges = "In range"           
+            DataObject.temp_ranges = "In range"
+                   
             

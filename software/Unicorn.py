@@ -7,6 +7,7 @@ import time
 import logging
 import sys
 import glob
+#import matplotlib.py as plt
 from serialfunctions import SerialPort
 import threading
 from DataObjects import DataObject
@@ -47,7 +48,13 @@ class MainApp(wx.Frame):
 
         # Init UserDisplayPanel class
         self.Panel_1 = UserDisplayPanel(self)
-        
+        menubar = wx.MenuBar()
+        fileMenu = wx.Menu()
+        fitem = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
+        fitem = fileMenu.Append(wx.ID_SAVEAS, 'Save as', 'Save as')
+        menubar.Append(fileMenu, '&File')
+        self.SetMenuBar(menubar)
+
         #Using BoxSizer in wxPython to layout UserDisplayPanel
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
@@ -183,8 +190,7 @@ class UserDisplayPanel(wx.Panel):
         self.amp_range.SetFont(font2)
         self.temp_range = wx.StaticText(self, wx.ID_ANY, "")
         self.temp_range.SetFont(font2)
-        self.Bind(wx.EVT_CLOSE, UserDisplayPanel.stop_serial)
-        self.Bind(wx.EVT_CLOSE, UserDisplayPanel.on_close)
+        self.Bind(wx.EVT_CLOSE, self.stop_serial)
         
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
@@ -317,9 +323,12 @@ class UserDisplayPanel(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+    def onExit(self, event):
+        self.Close()
+
     def on_close(self, event):
-        sys.exit()
-        event.Skip()
+        UserDisplayPanel.read_serial.exit()
+
 
     def update_range_values(self,event):
         """Function to get values entered by user and use as values for ranges"""
@@ -403,6 +412,8 @@ class UserDisplayPanel(wx.Panel):
     def stop_serial(self,event):
         """function to stop serial connection"""
         UserDisplayPanel.serial_port.close_serial()
+        return UserDisplayPanel.update_serial_display
+        return UserDisplayPanel.update
         event.Skip()
         #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
     def onToggle(self, event):
