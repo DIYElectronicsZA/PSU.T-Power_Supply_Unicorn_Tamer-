@@ -50,8 +50,8 @@ class MainApp(wx.Frame):
         self.Panel_1 = UserDisplayPanel(self)
         menubar = wx.MenuBar()
         fileMenu = wx.Menu()
-        fitem = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
         fitem = fileMenu.Append(wx.ID_SAVEAS, 'Save as', 'Save as')
+        fitem = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
         menubar.Append(fileMenu, '&File')
         self.SetMenuBar(menubar)
 
