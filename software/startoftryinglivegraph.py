@@ -1,5 +1,8 @@
 import serial
 import numpy as np
+import time
+import sys
+import matplotlib.pyplot as plt
 
 ser = serial.Serial()
 ser.baudrate = 115200
@@ -7,6 +10,7 @@ ser.port = 'COM8'
 ser.open()
 
 one_list = []
+stime = np.array([])
 test_num = 0
 for serial_output in ser:
     listing = []  
@@ -23,10 +27,14 @@ for serial_output in ser:
         listing.append(serial_output[2])
         listing.append(serial_output[3])
         one_list.append(listing)
+
+        newtime = time.clock()
+        stime = np.append(stime, newtime)
         print one_list
-        for i in one_list:
-            print i
+        plt.plot(stime,one_list, 'ro')
+        plt.show()
     except:
         continue
+
 
 
