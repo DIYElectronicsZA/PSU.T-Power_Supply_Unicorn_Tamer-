@@ -184,11 +184,11 @@ class UserDisplayPanel(wx.Panel):
         self.power_value_update = wx.StaticText(self, wx.ID_ANY, "Power Output")
         self.power_value_update.SetFont(font3)
         self.power_value_update.SetForegroundColour(wx.Colour(153,17,37))
-        self.volt_range = wx.StaticText(self, wx.ID_ANY, "")
+        self.volt_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.volt_range.SetFont(font2)
-        self.amp_range = wx.StaticText(self, wx.ID_ANY, "")
+        self.amp_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.amp_range.SetFont(font2)
-        self.temp_range = wx.StaticText(self, wx.ID_ANY, "")
+        self.temp_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.temp_range.SetFont(font2)
         self.Bind(wx.EVT_CLOSE, self.stop_serial)
         
@@ -299,7 +299,10 @@ class UserDisplayPanel(wx.Panel):
         channel2_sizer.Add(Temp_sizer_2,0, wx.ALL,5)   
         #Adding Ports components, Volt display, Amp display and Temp display to BOTTOM Panel
         combo_channel_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        breaker_sizer = wx.BoxSizer(wx.VERTICAL)
+        
         combo_channel_sizer.Add(channel1_sizer,0,wx.ALL|wx.EXPAND,5)
+
         combo_channel_sizer.Add(channel2_sizer, 0, wx.ALL|wx.EXPAND,5)
         Bottom_panel_sizer.Add(ports_sizer, 0, wx.ALL|wx.EXPAND,5)
         Bottom_panel_sizer.Add(ports_selection_sizer, 0, wx.CENTER,5)
@@ -375,6 +378,7 @@ class UserDisplayPanel(wx.Panel):
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "")
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "")
+        UserDisplayPanel.data_object.checkerrortemp(temp = UserDisplayPanel.serial_port.temp, temp_ranges= "")
 
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "")
@@ -405,6 +409,7 @@ class UserDisplayPanel(wx.Panel):
         self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
+        self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
         #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
 
        

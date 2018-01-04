@@ -87,7 +87,7 @@ class DataObject(object):
             DataObject.amps_ranges = "In range"
         f.close()
     
-    def checkerrottemp(self,temp):
+    def checkerrortemp(self,temp, temp_ranges):
         if float(DataObject.Tmin) > float(temp):
             DataObject.temp_ranges = "Below range"
         elif float(DataObject.Tmax) < float(temp):
