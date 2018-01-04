@@ -49,10 +49,12 @@ class DataObject(object):
     #Method to check if voltage falls within parameters
     def checkerrorvoltage(self, volts, volt_ranges, Vmax, Vmin):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
-        f = open('voltsvalue.txt', 'a')
+        datestr = time.strftime("%Y-%m-%d")
+        fname = str('Volts_Errors_' + str(datestr) + '.txt')
+        f = open(fname, 'a')
         if float(Vmin) > float(volts):
             DataObject.volt_ranges = "Below range"
-            #DataObject.error_marker = DataObject.error_marker + 1
+            DataObject.error_marker = DataObject.error_marker + 1
             f.write(volts)
             f.write(" Below range ")
             f.write(' ')
@@ -60,7 +62,7 @@ class DataObject(object):
             f.write('\n')
         elif float(Vmax) < float(volts):
             DataObject.volt_ranges = "Above range"
-            #DataObject.error_marker = DataObject.error_marker + 1
+            DataObject.error_marker = DataObject.error_marker + 1
             f.write(volts)
             f.write(" Above range ")
             f.write(' ')
@@ -73,7 +75,9 @@ class DataObject(object):
     #Method to check if current falls within parameters
     def checkerrorcurrent(self, amps, amps_ranges, Amax, Amin):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
-        f = open('ampssvalue.txt', 'a')
+        datestr = time.strftime("%Y-%m-%d")
+        fname = str('Current_Errors_' + str(datestr) + '.txt')
+        f = open(fname, 'a')
         if float(Amin) > float(amps):
             DataObject.amps_ranges = "Below range"
             DataObject.error_marker = DataObject.error_marker + 1
@@ -83,7 +87,7 @@ class DataObject(object):
             f.write('\n')
         elif float(Amax) < float(amps):
             DataObject.amps_ranges = "Above range"
-            #DataObject.error_marker = DataObject.error_marker + 1
+            DataObject.error_marker = DataObject.error_marker + 1
             f.write(amps)
             f.write(" Above range ")
             f.write(timestr)
