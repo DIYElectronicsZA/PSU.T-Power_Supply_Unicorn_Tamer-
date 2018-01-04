@@ -84,34 +84,61 @@ class SerialPort(object):
                 channels = int(serial_output[0])
             except:
                 continue
+
+            one_list = []
             if channels == 1:
+                listing = []
+                test_num = 0
                 try:
                     #print serial_output
                     serial_output = serial_output.split(',')
                     serial_list.append(serial_output)
                     serial_output[3] = serial_output[3].replace(';', "")
                     serial_output[3] = serial_output[3].strip('\r\n')
+
                     SerialPort.port  = serial_output[0]
                     SerialPort.volts = serial_output[1]
                     SerialPort.amps  = serial_output[2]
                     SerialPort.temp  = serial_output[3]
-                    print serial_output
 
+                    serial_output[1] = float(serial_output[1])
+                    serial_output[2] = float(serial_output[2])
+                    serial_output[3] = float(serial_output[3])
+                    test_num = test_num + 1
+                    listing.append(test_num)
+                    listing.append(serial_output[1])
+                    listing.append(serial_output[2])
+                    listing.append(serial_output[3])
+                    one_list.append(listing)
                 except:
                     continue
+
+            two_list = 0
             if channels == 2:
+                listing = []
+                test_num = 0
                 try:
                     #print serial_output
                     serial_output = serial_output.split(',')
                     serial_list.append(serial_output)
                     serial_output[3] = serial_output[3].replace(';',"")
                     serial_output[3] = serial_output[3].strip('\r\n')
+
                     SerialPort.port2  = serial_output[0]
                     SerialPort.volts2 = serial_output[1]  
                     SerialPort.amps2  = serial_output[2] 
                     SerialPort.temp2  = serial_output[3]
-                    print serial_output
 
+                    serial_output[1] = float(serial_output[1])
+                    serial_output[2] = float(serial_output[2])
+                    serial_output[3] = float(serial_output[3])
+
+                    test_num = test_num + 1
+                    listing.append(test_num)
+                    listing.append(serial_output[1])
+                    listing.append(serial_output[2])
+                    listing.append(serial_output[3])
+                    two_list.append(listing)
                 except:
                     continue
             else:
