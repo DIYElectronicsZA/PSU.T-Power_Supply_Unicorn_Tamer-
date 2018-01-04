@@ -13,10 +13,6 @@ import threading
 from DataObjects import DataObject
 #-*- coding: utf-8 -*-
 
-#3 parts
-#1: User Display and interactions
-#2: Serial connection
-#3: Logic using User inputs
 
 #Setup Debug Logging 
 #From https://inventwithpython.com/blog/2012/04/06/
@@ -44,16 +40,16 @@ class MainApp(wx.Frame):
     def __init__(self, parent, title):
         """Class Constructor"""
         wx.Frame.__init__(self, parent, title=title)
-        self.Show(True)
+        self.Show(True) #Displays Frame
 
         # Init UserDisplayPanel class
         self.Panel_1 = UserDisplayPanel(self)
-        menubar = wx.MenuBar()
-        fileMenu = wx.Menu()
+        menubar = wx.MenuBar() #Adds a menubar
+        fileMenu = wx.Menu() #Menu to add to menubar
         fitem = fileMenu.Append(wx.ID_SAVEAS, 'Save as', 'Save as')
         fitem = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
         menubar.Append(fileMenu, '&File')
-        self.SetMenuBar(menubar)
+        self.SetMenuBar(menubar) #Adds menu list to menubar
 
         #Using BoxSizer in wxPython to layout UserDisplayPanel
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -192,6 +188,7 @@ class UserDisplayPanel(wx.Panel):
         self.temp_range.SetFont(font2)
         self.Bind(wx.EVT_CLOSE, self.stop_serial)
         
+
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
         Top_panel_sizer    = wx.BoxSizer(wx.VERTICAL) #Sizer for top half of overall sizer
@@ -274,14 +271,17 @@ class UserDisplayPanel(wx.Panel):
         Temp_sizer_2= wx.BoxSizer(wx.HORIZONTAL)
         Temp_sizer_2.Add(self.Temp_value_update_2,0,wx.ALL, 5)
 
+        #power display sizer
         power_sizer = wx.BoxSizer(wx.HORIZONTAL)
         power_sizer.Add(Power_value, 0 , wx.ALL, 5)
         power_sizer.Add(self.power_value_update,0 , wx.ALL, 5)
 
+        #Error marker sizer
         error_sizer = wx.BoxSizer(wx.HORIZONTAL)
         error_sizer.Add(error_marker, 0, wx.ALL, 5)
         error_sizer.Add(self.error_marker_update,0, wx.ALL,5)
 
+        #Channel 1 volts, amps, temp, power values sizer
         channel1_sizer = wx.BoxSizer(wx.VERTICAL)
         channel1_sizer.Add(error_sizer, 0 ,wx.ALL|wx.EXPAND,5)
         channel1_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND, 5)
@@ -289,9 +289,11 @@ class UserDisplayPanel(wx.Panel):
         channel1_sizer.Add(Temp_sizer,0, wx.ALL|wx.EXPAND,5)
         channel1_sizer.Add(power_sizer,0 , wx.ALL|wx.EXPAND,5)
 
+        #Error marker sizer 2
         error_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
         error_sizer2.Add(self.error_marker_update2,0, wx.ALL,5)
 
+        #Channel 2 sizer
         channel2_sizer = wx.BoxSizer(wx.VERTICAL)
         channel2_sizer.Add(error_sizer2,0, wx.ALL,5)
         channel2_sizer.Add(Volts_sizer_2, 0, wx.ALL, 5)
@@ -326,6 +328,7 @@ class UserDisplayPanel(wx.Panel):
         Overal_sizer.Fit(self)
         self.Centre()
 
+     # Function to stop serial when "x" is clicked
     def onExit(self, event):
         self.Close()
 
@@ -337,19 +340,26 @@ class UserDisplayPanel(wx.Panel):
         """Function to get values entered by user and use as values for ranges"""
         max_volts = self.Max_volt_input.GetValue()
         UserDisplayPanel.data_object.Vmax = max_volts
+
         min_volts = self.Min_volt_input.GetValue()
         UserDisplayPanel.data_object.Vmin = min_volts
+        
         max_amps = self.Max_Amp_input.GetValue()
         UserDisplayPanel.data_object.Amax = max_amps
+        
         min_amps = self.Min_Amp_input.GetValue()
         UserDisplayPanel.data_object.Amin = min_amps
+        
         max_temp = self.Max_temp_input.GetValue()
         UserDisplayPanel.data_object.Tmax = max_temp
+        
         min_temp = self.Min_temp_input.GetValue()
         UserDisplayPanel.data_object.Tmin = min_temp
         UserDisplayPanel.time = self.Time_input.GetValue()
+        
         print UserDisplayPanel.time
         event.Skip()
+    
     def refresh_dropdown(self,event):
         ''' Method to refresh the list showing in the combobox found in the Bottom Panel in UserDisplayPanel ''' 
         
@@ -375,6 +385,7 @@ class UserDisplayPanel(wx.Panel):
         event.Skip()
 
     def get_range_values(self):
+        """continously update ranges in channels, stating whether out of range or in range."""
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "")
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "")
@@ -420,7 +431,7 @@ class UserDisplayPanel(wx.Panel):
         return UserDisplayPanel.update_serial_display
         return UserDisplayPanel.update
         event.Skip()
-        #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
+
     def onToggle(self, event):
         """Timer used to track serial"""
         if self.timer.IsRunning():
@@ -451,9 +462,6 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Allow user to save txt file of log
 
     
-
-
-
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
 app.MainLoop()
