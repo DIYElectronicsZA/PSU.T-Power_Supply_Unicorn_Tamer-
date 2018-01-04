@@ -66,7 +66,7 @@ class UserDisplayPanel(wx.Panel):
     
     # Class Variables
     serial_port = SerialPort()
-    data_object = DataObject(volts= 0,amps= 0,temp= 0,port=1)
+    data_object = DataObject(volts= 0,amps= 0,temp= 0,port=1, Vmax = 0, Vmin = 0, Amax = 0, Amin = 0, Tmax = 0, Tmin = 0)
     port_to_connect = ""
     time = 0
 
@@ -339,21 +339,27 @@ class UserDisplayPanel(wx.Panel):
     def update_range_values(self,event):
         """Function to get values entered by user and use as values for ranges"""
         max_volts = self.Max_volt_input.GetValue()
+        max_volts = float(max_volts)
         UserDisplayPanel.data_object.Vmax = max_volts
 
         min_volts = self.Min_volt_input.GetValue()
+        min_volts = float(min_volts)
         UserDisplayPanel.data_object.Vmin = min_volts
         
         max_amps = self.Max_Amp_input.GetValue()
+        max_amps = float(max_amps)
         UserDisplayPanel.data_object.Amax = max_amps
         
         min_amps = self.Min_Amp_input.GetValue()
+        min_amps = float(min_amps)
         UserDisplayPanel.data_object.Amin = min_amps
         
         max_temp = self.Max_temp_input.GetValue()
+        max_temp = float(max_temp)
         UserDisplayPanel.data_object.Tmax = max_temp
         
         min_temp = self.Min_temp_input.GetValue()
+        min_temp = float(min_temp)
         UserDisplayPanel.data_object.Tmin = min_temp
         UserDisplayPanel.time = self.Time_input.GetValue()
         
@@ -386,14 +392,20 @@ class UserDisplayPanel(wx.Panel):
 
     def get_range_values(self):
         """continously update ranges in channels, stating whether out of range or in range."""
+        Vmax_input = int(self.Max_volt_input.GetValue())
+        Vmin_input = int(self.Min_volt_input.GetValue())
+        Amax_input = int(self.Max_Amp_input.GetValue())
+        Amin_input = int(self.Min_Amp_input.GetValue())
+        Tmax_input = int(self.Max_temp_input.GetValue())
+        Tmin_input = int(self.Min_temp_input.GetValue())
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
-        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "")
-        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "")
-        UserDisplayPanel.data_object.checkerrortemp(temp = UserDisplayPanel.serial_port.temp, temp_ranges= "")
+        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
+        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps, amps_ranges= "", Amax = Amax_input, Amin = Amin_input)
+        UserDisplayPanel.data_object.checkerrortemp(temp = UserDisplayPanel.serial_port.temp, temp_ranges= "", Tmax = Tmax_input, Tmin = Tmin_input)
 
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
-        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "")
-        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "")
+        UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
+        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input)
 
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
@@ -450,6 +462,7 @@ class UserDisplayPanel(wx.Panel):
         print time.ctime()
         self.get_range_values()
         self.update_serial_display()
+        #self.update_range_values()
 
         
 
