@@ -66,7 +66,7 @@ class UserDisplayPanel(wx.Panel):
     
     # Class Variables
     serial_port = SerialPort()
-    data_object = DataObject(volts= 0,amps= 0,temp= 0,port=1, Vmax = 0, Vmin = 0, Amax = 0, Amin = 0, Tmax = 0, Tmin = 0)
+    data_object = DataObject(volts= 0,amps= 0,temp= 0,port=0, Vmax = 0, Vmin = 0, Amax = 0, Amin = 0, Tmax = 0, Tmin = 0)
     port_to_connect = ""
     time = 0
 
@@ -407,7 +407,7 @@ class UserDisplayPanel(wx.Panel):
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input)
 
-        UserDisplayPanel.data_object.writetocsv(UserDisplayPanel.serial_port.volts, UserDisplayPanel.serial_port.amps, UserDisplayPanel.serial_port.temp)
+        UserDisplayPanel.data_object.writetocsv(UserDisplayPanel.serial_port.port, UserDisplayPanel.serial_port.volts, UserDisplayPanel.serial_port.amps, UserDisplayPanel.serial_port.temp, UserDisplayPanel.serial_port.port2, UserDisplayPanel.serial_port.volts2, UserDisplayPanel.serial_port.amps2, UserDisplayPanel.serial_port.temp2)
 
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""

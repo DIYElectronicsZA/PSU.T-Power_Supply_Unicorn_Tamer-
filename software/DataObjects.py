@@ -16,7 +16,7 @@ class DataObject(object):
     amps_ranges = "nothing"
     temp_ranges = "nothing"
     power = ""
-    def __init__(self, volts, amps, temp, Vmax, Vmin, Amax, Amin, Tmax, Tmin, port=1):
+    def __init__(self, volts, amps, temp, Vmax, Vmin, Amax, Amin, Tmax, Tmin, port):
         """Class constructor"""
         self.Volt = volts
         self.Amps = amps
@@ -28,6 +28,7 @@ class DataObject(object):
         self.Amin  = Amin
         self.Tmax  = Tmax
         self.Tmin  = Tmin
+        self.port = port
         #Index = Index+1        
     
     def changeclassvariables(self):
@@ -106,11 +107,11 @@ class DataObject(object):
         else:
             DataObject.temp_ranges = "In range"
             
-    def writetocsv(self, volts,amps,temp):
+    def writetocsv(self, port, volts, amps, temp, port2, volts2, amps2, temp2):
         with open('powersupply.csv', 'a') as csvfile:
             fieldnames = ['Port_number', 'Voltage', 'Current', 'Temperature']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             #writer.writeheader()   
-            writer.writerow({'Port_number': '1', 'Voltage': volts, 'Current': amps, 'Temperature': temp})
-            writer.writerow({'Port_number': '1', 'Voltage': volts, 'Current': amps, 'Temperature': temp})
+            writer.writerow({'Port_number': port, 'Voltage': volts, 'Current': amps, 'Temperature': temp})
+            writer.writerow({'Port_number': port2, 'Voltage': volts2, 'Current': amps2, 'Temperature': temp2})
        
