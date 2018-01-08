@@ -1,4 +1,5 @@
 import time
+import csv
 class DataObject(object):
     """Class used to compare values coming from serial and determine
      if they fall within the parameters specified by user input as well
@@ -104,5 +105,12 @@ class DataObject(object):
             DataObject.temp_ranges = "Above range"
         else:
             DataObject.temp_ranges = "In range"
-                   
             
+    def writetocsv(self, volts,amps,temp):
+        with open('powersupply.csv', 'a') as csvfile:
+            fieldnames = ['Port_number', 'Voltage', 'Current', 'Temperature']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            #writer.writeheader()   
+            writer.writerow({'Port_number': '1', 'Voltage': volts, 'Current': amps, 'Temperature': temp})
+            writer.writerow({'Port_number': '1', 'Voltage': volts, 'Current': amps, 'Temperature': temp})
+       

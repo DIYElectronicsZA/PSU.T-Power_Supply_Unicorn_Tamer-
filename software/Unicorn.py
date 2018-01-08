@@ -407,6 +407,8 @@ class UserDisplayPanel(wx.Panel):
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input)
 
+        UserDisplayPanel.data_object.writetocsv(UserDisplayPanel.serial_port.volts, UserDisplayPanel.serial_port.amps, UserDisplayPanel.serial_port.temp)
+
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
