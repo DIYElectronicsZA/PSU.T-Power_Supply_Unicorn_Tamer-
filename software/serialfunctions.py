@@ -29,15 +29,15 @@ class SerialPort(object):
     """Class containing functions to list available Comports,
     Open a serial port, close a serial port and read data from a serial port"""
     Comlist = []
-    ser      = ""
-    port     = ''
-    volts    = '0'
-    amps     = '0'
-    temp     = '0'
-    port2    = ''
-    volts2   = '0'
-    amps2    = '0'
-    temp2    = '0'
+    ser = ""
+    port = ''
+    volts = '0'
+    amps = '0'
+    temp = '0'
+    port2 = ''
+    volts2 = '0'
+    amps2 = '0'
+    temp2 = '0'
     error_on = 0
     #Listing available ports for serial
     def serial_ports_list(self):
@@ -88,6 +88,7 @@ class SerialPort(object):
                 channels = int(serial_output[0])
             except:
                 continue
+                #if serial_ouput isnt int
 
             one_list = []
             if channels == 1:
@@ -125,7 +126,7 @@ class SerialPort(object):
                     #print serial_output
                     serial_output = serial_output.split(',')
                     serial_list.append(serial_output)
-                    serial_output[3] = serial_output[3].replace(';',"")
+                    serial_output[3] = serial_output[3].replace(';', "")
                     serial_output[3] = serial_output[3].strip('\r\n')
 
                     SerialPort.port2  = serial_output[0]

@@ -7,12 +7,15 @@ import time
 import logging
 import sys
 import glob
+import numpy as np
 #import matplotlib.py as plt
 from serialfunctions import SerialPort
+from GraphPanels import GraphPanel
+from GraphPanels import GraphPanel_2
 import threading
 from DataObjects import DataObject
 from numpy import arange, sin, pi
-import matplotlib as plt
+import matplotlib.pyplot as plt
 #matplotlib.use('WXAgg')
 
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
@@ -77,7 +80,8 @@ class UserDisplayPanel(wx.Panel):
     
     # Class Variables
     serial_port = SerialPort()
-    data_object = DataObject(volts= 0,amps= 0,temp= 0,port=0, Vmax = 0, Vmin = 0, Amax = 0, Amin = 0, Tmax = 0, Tmin = 0)
+    #graph_panel = GraphPanel()
+    data_object = DataObject(volts=0, amps=0, temp=0, port=0,Vmax =0, Vmin =0, Amax =0,Amin =0, Tmax =0, Tmin =0)
     port_to_connect = ""
     time = 0
 
@@ -92,7 +96,7 @@ class UserDisplayPanel(wx.Panel):
         font3 = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font4 = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
         font5 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
-            
+
         #Settings label
         Settings_label = wx.StaticText(self, wx.ID_ANY, "Settings")
         Settings_label.SetFont(font)
@@ -482,44 +486,7 @@ class UserDisplayPanel(wx.Panel):
         self.update_serial_display()
         #self.update_range_values()
 
-class GraphPanel(wx.Panel):
-    def __init__(self, parent):
-        """Class Constructor"""
-        wx.Panel.__init__(self, parent=parent)
-        self.frame = parent
 
-        self.figure = Figure()
-        self.axes = self.figure.add_subplot(111)
-        self.canvas = FigureCanvas(self, -1, self.figure)
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.SetSizer(self.sizer)
-        self.Fit()
-
-    def draw(self):
-        t = arange(0.0, 3.0, 0.01)
-        s = sin(2 * pi * t)
-        self.axes.plot(t, s)
-
-class GraphPanel_2(wx.Panel):
-    def __init__(self, parent):
-        """Class Constructor"""
-        wx.Panel.__init__(self, parent=parent)
-        self.frame = parent
-
-        self.figure = Figure()
-        self.axes = self.figure.add_subplot(111)
-        self.canvas = FigureCanvas(self, -1, self.figure)
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.SetSizer(self.sizer)
-        self.Fit()
-
-    def draw(self):
-        t = arange(0.0, 3.0, 0.01)
-        s = sin(2 * pi * t)
-        self.axes.plot(t, s)   
-    
         
 
 #TODO: Creat realtime graphs of serial data collected
