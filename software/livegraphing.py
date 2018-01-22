@@ -1,4 +1,4 @@
-@@ -1,40 +0,0 @@
+
 import serial
  
 import numpy as np
@@ -30,7 +30,7 @@ test_num = 0
 for serial_output in ser:
  
     listing = []  
- 
+    plt.ion()
     try:
  
         serial_output = serial_output.split(',')
@@ -67,7 +67,7 @@ for serial_output in ser:
  
         plt.plot(stime,one_list, 'ro')
  
-        plt.show()
+        plt.pause(0.5)
  
     except:
  

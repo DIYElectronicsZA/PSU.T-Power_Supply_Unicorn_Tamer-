@@ -11,6 +11,13 @@ import glob
 from serialfunctions import SerialPort
 import threading
 from DataObjects import DataObject
+from numpy import arange, sin, pi
+import matplotlib as plt
+#matplotlib.use('WXAgg')
+
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.backends.backend_wx import NavigationToolbar2Wx
+from matplotlib.figure import Figure
 #-*- coding: utf-8 -*-
 
 
@@ -44,6 +51,8 @@ class MainApp(wx.Frame):
 
         # Init UserDisplayPanel class
         self.Panel_1 = UserDisplayPanel(self)
+        self.Panel_2 = GraphPanel(self)
+        self.Panel_3 = GraphPanel_2(self)
         menubar = wx.MenuBar() #Adds a menubar
         fileMenu = wx.Menu() #Menu to add to menubar
         fitem = fileMenu.Append(wx.ID_SAVEAS, 'Save as', 'Save as')
@@ -52,8 +61,10 @@ class MainApp(wx.Frame):
         self.SetMenuBar(menubar) #Adds menu list to menubar
 
         #Using BoxSizer in wxPython to layout UserDisplayPanel
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
+        sizer.Add(self.Panel_2, 0, wx.EXPAND|wx.ALL, 5)
+        sizer.Add(self.Panel_3, 0, wx.EXPAND|wx.ALL, 5)
         self.SetSizer(sizer)
         self.SetBackgroundColour('#E2E3F3')
         self.Fit ()
@@ -187,12 +198,14 @@ class UserDisplayPanel(wx.Panel):
         self.temp_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.temp_range.SetFont(font2)
         self.Bind(wx.EVT_CLOSE, self.stop_serial)
+         
         
 
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
         Top_panel_sizer    = wx.BoxSizer(wx.VERTICAL) #Sizer for top half of overall sizer
         Bottom_panel_sizer = wx.BoxSizer(wx.VERTICAL) #Sizer for Bottom half of overall sizer
+        
         
         #Setting sizer
         Setting_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -310,9 +323,12 @@ class UserDisplayPanel(wx.Panel):
         Bottom_panel_sizer.Add(ports_selection_sizer, 0, wx.CENTER,5)
         Bottom_panel_sizer.Add(combo_channel_sizer,0, wx.ALL|wx.EXPAND,5)
 
+        #graph_sizer.Add(fgraph,0,wx.ALL|wx.EXPAND,5)
+
         #Adding Top and Bottom sizers to the overall sizer
         Overal_sizer.Add(Top_panel_sizer,0, wx.ALL|wx.CENTER, 5)
         Overal_sizer.Add(Bottom_panel_sizer, 0, wx.ALL|wx.CENTER, 5)
+        
 
         #setup serial ports list: 
         self.refresh_dropdown(self)
@@ -466,6 +482,44 @@ class UserDisplayPanel(wx.Panel):
         self.update_serial_display()
         #self.update_range_values()
 
+class GraphPanel(wx.Panel):
+    def __init__(self, parent):
+        """Class Constructor"""
+        wx.Panel.__init__(self, parent=parent)
+        self.frame = parent
+
+        self.figure = Figure()
+        self.axes = self.figure.add_subplot(111)
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
+        self.SetSizer(self.sizer)
+        self.Fit()
+
+    def draw(self):
+        t = arange(0.0, 3.0, 0.01)
+        s = sin(2 * pi * t)
+        self.axes.plot(t, s)
+
+class GraphPanel_2(wx.Panel):
+    def __init__(self, parent):
+        """Class Constructor"""
+        wx.Panel.__init__(self, parent=parent)
+        self.frame = parent
+
+        self.figure = Figure()
+        self.axes = self.figure.add_subplot(111)
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
+        self.SetSizer(self.sizer)
+        self.Fit()
+
+    def draw(self):
+        t = arange(0.0, 3.0, 0.01)
+        s = sin(2 * pi * t)
+        self.axes.plot(t, s)   
+    
         
 
 #TODO: Creat realtime graphs of serial data collected

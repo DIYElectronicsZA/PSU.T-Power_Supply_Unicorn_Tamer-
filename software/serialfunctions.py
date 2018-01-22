@@ -38,6 +38,7 @@ class SerialPort(object):
     volts2   = '0'
     amps2    = '0'
     temp2    = '0'
+    error_on = 0
     #Listing available ports for serial
     def serial_ports_list(self):
         """ Lists serial port names
@@ -70,10 +71,13 @@ class SerialPort(object):
 
     def serial_port_open(self, Port_To_Open):
         """Method to open serial port"""
+        self.error_on = self.error_on + 5
+        print self.error_on
         self.port_to_open = Port_To_Open
         SerialPort.ser = serial.Serial(self.port_to_open, 115200)
         SerialPort.ser.close()
         SerialPort.ser.open()
+        
 
     #reading serial and parsing values
     def serial_data(self):        
@@ -149,6 +153,7 @@ class SerialPort(object):
     def close_serial(self):
         """Function to close serial port connection"""
         try:
+            self.error_on = self.error_on - 5
             SerialPort.ser.close()
         except:
             print "Kill me BEN!"
