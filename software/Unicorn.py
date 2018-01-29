@@ -206,8 +206,10 @@ class UserDisplayPanel(wx.Panel):
         self.temp_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.temp_range.SetFont(font2)
         self.Bind(wx.EVT_CLOSE, self.stop_serial)
-         
-        
+
+        self.pass_fail = wx.StaticText(self, wx.ID_ANY, "Pass")
+        self.pass_fail.SetForegroundColour((0,100,0))
+        self.pass_fail.SetFont(font2)
 
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
@@ -220,11 +222,15 @@ class UserDisplayPanel(wx.Panel):
         Setting_sizer.Add(Settings_label,0, wx.ALL, 5)
         
         #Time input sizer
+        threshold_sizer = wx.BoxSizer(wx.VERTICAL)
+        threshold_sizer.Add(self.pass_fail, 0, wx.ALL, 5)
+
         time_input_sizer = wx.BoxSizer(wx.HORIZONTAL)
         time_input_sizer.Add(Time_label, 0, wx.ALL,5)
         time_input_sizer.Add(self.Time_input,0, wx.ALL, 5)
         time_input_sizer.Add(Error_threshold, 0, wx.ALL,5)
         time_input_sizer.Add(self.Error_input, 0, wx.ALL,5)
+        
 
         #Voltage input sizer
         Volt_input_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -303,6 +309,7 @@ class UserDisplayPanel(wx.Panel):
         error_sizer = wx.BoxSizer(wx.HORIZONTAL)
         error_sizer.Add(error_marker, 0, wx.ALL, 5)
         error_sizer.Add(self.error_marker_update,0, wx.ALL,5)
+        error_sizer.Add(threshold_sizer,0, wx.ALL,5)
 
         #Channel 1 volts, amps, temp, power values sizer
         channel1_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -315,6 +322,7 @@ class UserDisplayPanel(wx.Panel):
         #Error marker sizer 2
         error_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
         error_sizer2.Add(self.error_marker_update2,0, wx.ALL,5)
+        
 
         #Channel 2 sizer
         channel2_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -461,6 +469,9 @@ class UserDisplayPanel(wx.Panel):
             #Update for Temp value
             self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
             self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
+            if int(UserDisplayPanel.data_object.error_marker) > 10:
+                self.pass_fail.SetForegroundColour((255,0,0))
+                self.pass_fail.SetLabel("Fail")
             self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
             self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
             self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
