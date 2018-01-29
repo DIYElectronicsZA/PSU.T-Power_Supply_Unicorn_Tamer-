@@ -108,6 +108,10 @@ class UserDisplayPanel(wx.Panel):
         self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "10")
         #TODO: Error check, to ensure int is entered
 
+        Error_threshold = wx.StaticText(self, wx.ID_ANY, "Error Threshold")
+        Error_threshold.SetFont(font2)
+        self.Error_input = wx.TextCtrl(self, wx.ID_ANY, "10")
+
         #Min and Max Voltage label and text control input for parameters in logic
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
         Min_volt_label.SetFont(font2)
@@ -219,6 +223,8 @@ class UserDisplayPanel(wx.Panel):
         time_input_sizer = wx.BoxSizer(wx.HORIZONTAL)
         time_input_sizer.Add(Time_label, 0, wx.ALL,5)
         time_input_sizer.Add(self.Time_input,0, wx.ALL, 5)
+        time_input_sizer.Add(Error_threshold, 0, wx.ALL,5)
+        time_input_sizer.Add(self.Error_input, 0, wx.ALL,5)
 
         #Voltage input sizer
         Volt_input_sizer = wx.BoxSizer(wx.HORIZONTAL)

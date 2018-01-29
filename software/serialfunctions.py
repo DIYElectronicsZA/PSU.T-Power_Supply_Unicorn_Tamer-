@@ -38,7 +38,6 @@ class SerialPort(object):
     volts2 = '0'
     amps2 = '0'
     temp2 = '0'
-    error_on = 0
     #Listing available ports for serial
     def serial_ports_list(self):
         """ Lists serial port names
