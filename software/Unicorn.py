@@ -469,7 +469,8 @@ class UserDisplayPanel(wx.Panel):
             #Update for Temp value
             self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
             self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
-            if int(UserDisplayPanel.data_object.error_marker) > 10:
+            User_threshold = int(self.Error_input.GetValue())
+            if int(UserDisplayPanel.data_object.error_marker) > User_threshold:
                 self.pass_fail.SetForegroundColour((255,0,0))
                 self.pass_fail.SetLabel("Fail")
             self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
