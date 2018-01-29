@@ -108,8 +108,10 @@ class DataObject(object):
     def checkerrortemp(self,temp, temp_ranges, Tmax, Tmin):
         if float(Tmin) > float(temp):
             DataObject.temp_ranges = "Below range"
+            DataObject.error_marker = DataObject.error_marker + 1
         elif float(Tmax) < float(temp):
             DataObject.temp_ranges = "Above range"
+            DataObject.error_marker = DataObject.error_marker + 1
         else:
             DataObject.temp_ranges = "In range"
             

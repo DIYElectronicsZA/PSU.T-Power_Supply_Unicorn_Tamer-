@@ -95,7 +95,7 @@ class SerialPort(object):
                 listing = []
                 test_num = 0
                 try:
-                    #print serial_output
+                    print serial_output
                     serial_output = serial_output.split(',')
                     serial_list.append(serial_output)
                     serial_output[3] = serial_output[3].replace(';', "")
@@ -115,6 +115,9 @@ class SerialPort(object):
                     listing.append(serial_output[2])
                     listing.append(serial_output[3])
                     one_list.append(listing)
+                    newtime = time.clock()
+                    stime = np.append(stime, newtime)
+                    print one_list
                 except:
                     continue
 

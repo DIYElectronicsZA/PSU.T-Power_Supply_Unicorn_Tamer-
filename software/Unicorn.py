@@ -89,7 +89,7 @@ class UserDisplayPanel(wx.Panel):
         """Class Constructor"""
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
-        
+        IsOpen = False
         #Different font styles used throughout the display
         font  = wx.Font(34, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font2 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
@@ -406,8 +406,9 @@ class UserDisplayPanel(wx.Panel):
             UserDisplayPanel.serial_port.port_to_open = UserDisplayPanel.port_to_connect #Run Opening Port from Serialfunctions.py document
             UserDisplayPanel.serial_port.serial_port_open(UserDisplayPanel.port_to_connect)     
             self.port_select_error.SetLabel("Port opened")
-            #self.update_serial_display() 
+            #self.update_serial_display()
             self.read_serial()
+            self.IsOpen = True
         event.Skip()
 
     def get_range_values(self):
@@ -431,37 +432,41 @@ class UserDisplayPanel(wx.Panel):
 
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
+        IsOpen = True
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
 
     def update_serial_display(self):
-        """Function to update bottom panel display to current serial values"""
-        #Update for volts value
-        self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts + " V")
-        #Update for Amp value
-        self.Amps_value_update.SetLabel(UserDisplayPanel.serial_port.amps + " A")
-        #Update for Temp value
-        self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp + u"\N{DEGREE SIGN}" + "C")
-        #Update power value
-        self.power_value_update.SetLabel(UserDisplayPanel.data_object.power)
-        #Update of range values
-        #Update for volts value
-        self.volts_value_update_2.SetLabel(UserDisplayPanel.serial_port.volts2 + " V")
-        #Update for Amp value
-        self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2 + " A")
-        #Update for Temp value
-        self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
-        self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
-        self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
-        self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
-        self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
-        #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
-
+        if self.IsOpen is True:
+            """Function to update bottom panel display to current serial values"""
+            #Update for volts value
+            self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts + " V")
+            #Update for Amp value
+            self.Amps_value_update.SetLabel(UserDisplayPanel.serial_port.amps + " A")
+            #Update for Temp value
+            self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp + u"\N{DEGREE SIGN}" + "C")
+            #Update power value
+            self.power_value_update.SetLabel(UserDisplayPanel.data_object.power)
+            #Update of range values
+            #Update for volts value
+            self.volts_value_update_2.SetLabel(UserDisplayPanel.serial_port.volts2 + " V")
+            #Update for Amp value
+            self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2 + " A")
+            #Update for Temp value
+            self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
+            self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
+            self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
+            self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
+            self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
+            #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
+        else:
+            print "stopped'"
        
     
     def stop_serial(self,event):
         """function to stop serial connection"""
         UserDisplayPanel.serial_port.close_serial()
+        self.IsOpen = False
         return UserDisplayPanel.update_serial_display
         return UserDisplayPanel.update
         event.Skip()

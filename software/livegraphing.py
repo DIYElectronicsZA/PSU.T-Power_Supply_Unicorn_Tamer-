@@ -16,7 +16,7 @@ for serial_output in ser:
     listing = []  
     plt.ion()
     try:
- 
+        print "hii"
         serial_output = serial_output.split(',')
         serial_output[3] = serial_output[3].replace(';', "")
         serial_output[3] = serial_output[3].strip('\r\n')
