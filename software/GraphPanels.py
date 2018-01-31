@@ -21,7 +21,7 @@ from matplotlib.backends.backend_wx import NavigationToolbar2Wx
 from matplotlib.figure import Figure
 #-*- coding: utf-8 -*-
 
-class GraphPanel(wx.Panel, object):
+class GraphPanel(wx.Panel):
     """Panel to show graph 1"""
     serial_port = SerialPort()
     plt.ion()
@@ -42,12 +42,12 @@ class GraphPanel(wx.Panel, object):
         voltage2 = GraphPanel.serial_port.volts2
         #while True:
         #    try:
-        def plotgraph(self):
-            try:
-                self.axes.plot(voltage1,voltage2, 'ro')
-                plt.pause(0.5)
-            except:
-                print "ew"
+    def plotgraph(self):
+        try:
+            self.axes.plot(voltage1,voltage2, 'ro')
+            plt.pause(0.5)
+        except:
+            print "ew"
 
 class GraphPanel_2(wx.Panel):
     """Panel to show graph 2"""

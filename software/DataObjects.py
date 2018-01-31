@@ -58,25 +58,25 @@ class DataObject(object):
         fname = str('Volts_Errors_' + str(datestr) + '.txt')
         f = open(fname, 'a')
         #print DataObject.serial_port.error_on
-        while DataObject.serial_port.error_on > 0:
-            if float(Vmin) > float(volts):
-                DataObject.volt_ranges = "Below range"
-                DataObject.error_marker = DataObject.error_marker + 1
-                f.write(volts)
-                f.write(" Below range ")
-                f.write(' ')
-                f.write(timestr)
-                f.write('\n')
-            elif float(Vmax) < float(volts):
-                DataObject.volt_ranges = "Above range"
-                DataObject.error_marker = DataObject.error_marker + 1
-                f.write(volts)
-                f.write(" Above range ")
-                f.write(' ')
-                f.write(timestr)
-                f.write('\n')
-            else:
-                DataObject.volt_ranges = "In range"
+        #while DataObject.serial_port.error_on > 0:
+        if float(Vmin) > float(volts):
+            DataObject.volt_ranges = "Below range"
+            DataObject.error_marker = DataObject.error_marker + 1
+            f.write(volts)
+            f.write(" Below range ")
+            f.write(' ')
+            f.write(timestr)
+            f.write('\n')
+        elif float(Vmax) < float(volts):
+            DataObject.volt_ranges = "Above range"
+            DataObject.error_marker = DataObject.error_marker + 1
+            f.write(volts)
+            f.write(" Above range ")
+            f.write(' ')
+            f.write(timestr)
+            f.write('\n')
+        else:
+            DataObject.volt_ranges = "In range"
         f.close()
 
     #Method to check if current falls within parameters
@@ -85,24 +85,24 @@ class DataObject(object):
         datestr = time.strftime("%Y-%m-%d")
         fname = str('Current_Errors_' + str(datestr) + '.txt')
         f = open(fname, 'a')
-        while DataObject.serial_port.error_on > 0:
-            if float(Amin) > float(amps):
-                DataObject.amps_ranges = "Below range"
-                DataObject.error_marker = DataObject.error_marker + 1
-                f.write(amps)
-                f.write(" Below range ")
-                f.write(timestr)
-                f.write('\n')
-            elif float(Amax) < float(amps):
-                DataObject.amps_ranges = "Above range"
-                DataObject.error_marker = DataObject.error_marker + 1
-                f.write(amps)
-                f.write(" Above range ")
-                f.write(timestr)
-                f.write('\n')
-                print DataObject.error_marker
-            else:
-                DataObject.amps_ranges = "In range"
+        #while DataObject.serial_port.error_on > 0:
+        if float(Amin) > float(amps):
+            DataObject.amps_ranges = "Below range"
+            DataObject.error_marker = DataObject.error_marker + 1
+            f.write(amps)
+            f.write(" Below range ")
+            f.write(timestr)
+            f.write('\n')
+        elif float(Amax) < float(amps):
+            DataObject.amps_ranges = "Above range"
+            DataObject.error_marker = DataObject.error_marker + 1
+            f.write(amps)
+            f.write(" Above range ")
+            f.write(timestr)
+            f.write('\n')
+            print DataObject.error_marker
+        else:
+            DataObject.amps_ranges = "In range"
         f.close()
     
     def checkerrortemp(self,temp, temp_ranges, Tmax, Tmin):
