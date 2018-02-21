@@ -1,4 +1,5 @@
 import serial
+import os
 import wx
 import wx.grid as grid
 import time
@@ -46,6 +47,8 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 logger.debug('Welcome to Power Supply Unicorn Tamer :)')
  
+wildcard = "Python source (*.py)|*.py|" \
+            "All files (*.*)|*.*"
 #Initiation class
 class MainApp(wx.Frame):
     """Main Frame responsible for holding the 3 panels (UserDisplay,Graph1, graph2)"""
@@ -60,7 +63,7 @@ class MainApp(wx.Frame):
         #self.Panel_3 = GraphPanel_2(self) #Graph2 panel
         menubar = wx.MenuBar() #Adds a menubar
         fileMenu = wx.Menu() #Menu to add to menubar
-        fitem= fileMenu.Append(wx.ID_SAVEAS, 'Save as', 'Save as')
+        fitem= fileMenu.Append(wx.ID_SAVEAS, 'Save as csv', 'Save as')
         self.Bind(wx.EVT_MENU, self.Panel_1.saving_serial, fitem)
         #wx.EVT_MENU(self, wx.ID_SAVEAS, UserDisplayPanel.saving_serial)
         #fitem = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
@@ -106,13 +109,13 @@ class UserDisplayPanel(wx.Panel):
         Settings_label.SetForegroundColour(wx.Colour(51,63,221))
 
         #Time label and textcntrl input for how long program should run
-        Time_label = wx.StaticText(self, wx.ID_ANY, "Time")
+        Time_label = wx.StaticText(self, wx.ID_ANY, "Time in minutes    ")
         Time_label.SetFont(font2)
         self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "10")
         #TODO: Error check, to ensure int is entered
 
         #Error threshold label and text control to establish how many error readings will be accepted
-        Error_threshold = wx.StaticText(self, wx.ID_ANY, "Error Threshold")
+        Error_threshold = wx.StaticText(self, wx.ID_ANY, "Error Threshold      ")
         Error_threshold.SetFont(font2)
         self.Error_input = wx.TextCtrl(self, wx.ID_ANY, "10")
 
@@ -128,7 +131,7 @@ class UserDisplayPanel(wx.Panel):
         #TODO: Set user friendly default values
 
         #Min and Max Current label and text control input for parameters in logic
-        Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
+        Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current  ")
         Min_Amp_label.SetFont(font2)
         self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "8")
 
@@ -397,15 +400,14 @@ class UserDisplayPanel(wx.Panel):
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input)
 
-        UserDisplayPanel.data_object.writetocsv(UserDisplayPanel.serial_port.port, UserDisplayPanel.serial_port.volts, UserDisplayPanel.serial_port.amps, UserDisplayPanel.serial_port.temp, UserDisplayPanel.serial_port.port2, UserDisplayPanel.serial_port.volts2, UserDisplayPanel.serial_port.amps2, UserDisplayPanel.serial_port.temp2)
 
     def read_serial(self):
         """Function to start serial_data function in serialfunctions via a thread so User Interface can still be used"""
         IsOpen = True
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
-        #t2 = threading.Thread(target=UserDisplayPanel.serial_port.save_ser)
-        #t2.start()
+        t2 = threading.Thread(target=self.time_taken)
+        t2.start()
 
     def update_serial_display(self):
         if self.IsOpen is True:
@@ -441,7 +443,16 @@ class UserDisplayPanel(wx.Panel):
         else:
             print "stopped'"
        
-    
+    def time_taken(self):
+            timer_val = self.Time_input.GetValue()
+            timer_val = int(timer_val)
+            timer_val = timer_val * 60
+            while timer_val > 0:
+                time.sleep(1)
+                timer_val = timer_val - 1
+                print timer_val
+            if timer_val == 0:
+                self.IsOpen = False        
     def stop_serial(self,event):
         """function to stop serial connection"""
         UserDisplayPanel.serial_port.close_serial()
@@ -451,7 +462,7 @@ class UserDisplayPanel(wx.Panel):
         event.Skip()
 
     def onToggle(self, event):
-        """Timer used to track serial"""
+        """Timer used to track display update"""
         if self.timer.IsRunning():
             self.timer.Stop()
             
@@ -459,6 +470,7 @@ class UserDisplayPanel(wx.Panel):
             #print "timer stopped!"
         else:
             #print "starting timer..."
+
             self.timer.Start(1000)
             #self.toggleBtn.SetLabel("Stop")
         event.Skip()
@@ -470,19 +482,22 @@ class UserDisplayPanel(wx.Panel):
         self.update_serial_display()
     
     def saving_serial(self,event):
+        self.currentDirectory = os.getcwd()
         print SerialPort.Serial_dict
         print SerialPort.Serial_dict_2
-        with open('names.csv', 'w') as csvfile:
+
+        with open('Power_supply_tester_Results.csv', 'w') as csvfile:
             fieldnames = ['Channel','Test number', 'Voltage', 'Current', 'Temperature']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
-            #for values in SerialPort.Serial_dict:
             for values in SerialPort.Serial_dict:
                 writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3]})
             for values in SerialPort.Serial_dict_2:
                 writer.writerow({'Channel': values[0][0],'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3]})
         
+
+
 
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format

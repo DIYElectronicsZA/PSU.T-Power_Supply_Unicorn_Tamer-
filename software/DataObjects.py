@@ -47,66 +47,35 @@ class DataObject(object):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
         DataObject.power = float(volts) * float(amps)
         DataObject.power = str(DataObject.power)
-        fp = open('powervalue.txt', 'a')
-        fp.write(str(DataObject.power))
-        fp.write(' ')
-        fp.write(timestr)
-        fp.write('\n')
-        fp.close()
 
     #Method to check if voltage falls within parameters
     def checkerrorvoltage(self, volts, volt_ranges, Vmax, Vmin):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
         datestr = time.strftime("%Y-%m-%d")
-        fname = str('Volts_Errors_' + str(datestr) + '.txt')
-        f = open(fname, 'a')
         #print DataObject.serial_port.error_on
         #while DataObject.serial_port.error_on > 0:
         if float(Vmin) > float(volts):
             DataObject.volt_ranges = "Below range"
             DataObject.error_marker = DataObject.error_marker + 1
-            f.write(volts)
-            f.write(" Below range ")
-            f.write(' ')
-            f.write(timestr)
-            f.write('\n')
         elif float(Vmax) < float(volts):
             DataObject.volt_ranges = "Above range"
             DataObject.error_marker = DataObject.error_marker + 1
-            f.write(volts)
-            f.write(" Above range ")
-            f.write(' ')
-            f.write(timestr)
-            f.write('\n')
         else:
             DataObject.volt_ranges = "In range"
-        f.close()
 
     #Method to check if current falls within parameters
     def checkerrorcurrent(self, amps, amps_ranges, Amax, Amin):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
         datestr = time.strftime("%Y-%m-%d")
-        fname = str('Current_Errors_' + str(datestr) + '.txt')
-        f = open(fname, 'a')
         #while DataObject.serial_port.error_on > 0:
         if float(Amin) > float(amps):
             DataObject.amps_ranges = "Below range"
             DataObject.error_marker = DataObject.error_marker + 1
-            f.write(amps)
-            f.write(" Below range ")
-            f.write(timestr)
-            f.write('\n')
         elif float(Amax) < float(amps):
             DataObject.amps_ranges = "Above range"
             DataObject.error_marker = DataObject.error_marker + 1
-            f.write(amps)
-            f.write(" Above range ")
-            f.write(timestr)
-            f.write('\n')
-            print DataObject.error_marker
         else:
             DataObject.amps_ranges = "In range"
-        f.close()
     
     def checkerrortemp(self,temp, temp_ranges, Tmax, Tmin):
         if float(Tmin) > float(temp):
@@ -118,13 +87,7 @@ class DataObject(object):
         else:
             DataObject.temp_ranges = "In range"
             
-    def writetocsv(self, port, volts, amps, temp, port2, volts2, amps2, temp2):
-        with open('powersupply.csv', 'a') as csvfile:
-            fieldnames = ['Port_number', 'Voltage', 'Current', 'Temperature']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            #writer.writeheader()   
-            writer.writerow({'Port_number': port, 'Voltage': volts, 'Current': amps, 'Temperature': temp})
-            writer.writerow({'Port_number': port2, 'Voltage': volts2, 'Current': amps2, 'Temperature': temp2})
+
     
     def draw_graph(self):
         self.figure = Figure()
