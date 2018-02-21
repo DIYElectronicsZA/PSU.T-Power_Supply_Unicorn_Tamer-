@@ -38,6 +38,8 @@ class SerialPort(object):
     volts2 = '0'
     amps2 = '0'
     temp2 = '0'
+    Serial_dict = []
+    Serial_dict_2 = []
     #error_on = 0
     #Listing available ports for serial
     def serial_ports_list(self):
@@ -77,7 +79,11 @@ class SerialPort(object):
         SerialPort.ser = serial.Serial(self.port_to_open, 115200)
         SerialPort.ser.close()
         SerialPort.ser.open()
-        
+
+    def save_ser(self):
+        for serial_output in SerialPort.ser:
+            self.Serial_dict.append(serial_output)   
+            #print self.Serial_dict 
 
     #reading serial and parsing values
     def serial_data(self):        
@@ -95,12 +101,13 @@ class SerialPort(object):
                 listing = []
                 test_num = 0
                 try:
-                    print serial_output
+                    #print serial_output
                     serial_output = serial_output.split(',')
+                    #print serial_output
                     serial_list.append(serial_output)
-                    serial_output[3] = serial_output[3].replace(';', "")
-                    serial_output[3] = serial_output[3].strip('\r\n')
-
+                    #serial_output[3] = serial_output[3].replace(';', "")
+                    serial_output[3] = serial_output[3].strip(';\r\n')
+                    SerialPort.Serial_dict.append(serial_output)
                     SerialPort.port  = serial_output[0]
                     SerialPort.volts = serial_output[1]
                     SerialPort.amps  = serial_output[2]
@@ -117,7 +124,7 @@ class SerialPort(object):
                     one_list.append(listing)
                     newtime = time.clock()
                     stime = np.append(stime, newtime)
-                    print one_list
+                    #print one_list
                 except:
                     continue
 
@@ -131,7 +138,7 @@ class SerialPort(object):
                     serial_list.append(serial_output)
                     serial_output[3] = serial_output[3].replace(';', "")
                     serial_output[3] = serial_output[3].strip('\r\n')
-
+                    SerialPort.Serial_dict_2.append(serial_output)
                     SerialPort.port2  = serial_output[0]
                     SerialPort.volts2 = serial_output[1]  
                     SerialPort.amps2  = serial_output[2] 

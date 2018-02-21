@@ -8,6 +8,7 @@ import logging
 import sys
 import glob
 import numpy as np
+import csv
 #import matplotlib.py as plt
 from serialfunctions import SerialPort
 from GraphPanels import GraphPanel
@@ -52,23 +53,25 @@ class MainApp(wx.Frame):
         """Class Constructor"""
         wx.Frame.__init__(self, parent, title=title)
         self.Show(True) #Displays Frame
-
         # Init UserDisplayPanel class
         self.Panel_1 = UserDisplayPanel(self) #Settings and User inputs Panel
-        self.Panel_2 = GraphPanel(self) #Graph1 panel
-        self.Panel_3 = GraphPanel_2(self) #Graph2 panel
+        #self.Panel_2 = GraphPanel(self) #Graph1 panel
+        #self.Panel_2 = wx.Panel
+        #self.Panel_3 = GraphPanel_2(self) #Graph2 panel
         menubar = wx.MenuBar() #Adds a menubar
         fileMenu = wx.Menu() #Menu to add to menubar
-        fitem = fileMenu.Append(wx.ID_SAVEAS, 'Save as', 'Save as')
-        fitem = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
+        fitem= fileMenu.Append(wx.ID_SAVEAS, 'Save as', 'Save as')
+        self.Bind(wx.EVT_MENU, self.Panel_1.saving_serial, fitem)
+        #wx.EVT_MENU(self, wx.ID_SAVEAS, UserDisplayPanel.saving_serial)
+        #fitem = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
         menubar.Append(fileMenu, '&File')
         self.SetMenuBar(menubar) #Adds menu list to menubar
 
         #Using BoxSizer in wxPython to layout UserDisplayPanel and graphs
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
-        sizer.Add(self.Panel_2, 0, wx.EXPAND|wx.ALL, 5)
-        sizer.Add(self.Panel_3, 0, wx.EXPAND|wx.ALL, 5)
+        #sizer.Add(self.Panel_2, 0, wx.EXPAND|wx.ALL, 5)
+        #sizer.Add(self.Panel_3, 0, wx.EXPAND|wx.ALL, 5)
         self.SetSizer(sizer)
         self.SetBackgroundColour('#E2E3F3')
         self.Fit ()
@@ -91,7 +94,6 @@ class UserDisplayPanel(wx.Panel):
         """Class Constructor"""
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
-        self.graph_panel = GraphPanel
         IsOpen = False
         #Different font styles used throughout the display
         font  = wx.Font(34, wx.DECORATIVE, wx.NORMAL, wx.BOLD) #Large font for top heading
@@ -155,7 +157,7 @@ class UserDisplayPanel(wx.Panel):
         port_refresh.Bind(wx.EVT_BUTTON, self.refresh_dropdown)
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Connect to port') #Select port button
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
-        #Select_port.Bind(wx.EVT_BUTTON, self.onToggle)
+        Select_port.Bind(wx.EVT_BUTTON, self.onToggle)
         Disconnect_port = wx.Button(self, wx.ID_ANY, label = "Disconnect")
         Disconnect_port.Bind(wx.EVT_BUTTON, self.stop_serial) #Disconnect from serial port
         self.port_select_error = wx.StaticText(self, wx.ID_ANY, "") #Text area to display Port seletion error
@@ -402,9 +404,12 @@ class UserDisplayPanel(wx.Panel):
         IsOpen = True
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
+        #t2 = threading.Thread(target=UserDisplayPanel.serial_port.save_ser)
+        #t2.start()
 
     def update_serial_display(self):
         if self.IsOpen is True:
+            GraphPanel.IsOn = True
             """Function to update bottom panel display to current serial values"""
             #Update for volts value
             self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts + " V")
@@ -429,10 +434,10 @@ class UserDisplayPanel(wx.Panel):
             if int(UserDisplayPanel.data_object.error_marker) > User_threshold:
                 self.pass_fail.SetForegroundColour((255,0,0))
                 self.pass_fail.SetLabel("Fail")
+                print GraphPanel.IsOn
 
             #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
             #graph_panel = GraphPanel(self)
-            #graph_panel.plotgraph()
         else:
             print "stopped'"
        
@@ -451,20 +456,32 @@ class UserDisplayPanel(wx.Panel):
             self.timer.Stop()
             
             #self.toggleBtn.SetLabel("Start")
-            print "timer stopped!"
+            #print "timer stopped!"
         else:
-            print "starting timer..."
+            #print "starting timer..."
             self.timer.Start(1000)
             #self.toggleBtn.SetLabel("Stop")
         event.Skip()
 
     def update(self, event):
-        print "\nupdated: ",
-        print time.ctime()
+        #print "\nupdated: ",
+        #print time.ctime()
         self.get_range_values()
         self.update_serial_display()
+    
+    def saving_serial(self,event):
+        print SerialPort.Serial_dict
+        print SerialPort.Serial_dict_2
+        with open('names.csv', 'w') as csvfile:
+            fieldnames = ['Channel','Test number', 'Voltage', 'Current', 'Temperature']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-
+            writer.writeheader()
+            #for values in SerialPort.Serial_dict:
+            for values in SerialPort.Serial_dict:
+                writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3]})
+            for values in SerialPort.Serial_dict_2:
+                writer.writerow({'Channel': values[0][0],'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3]})
         
 
 #TODO: Creat realtime graphs of serial data collected
