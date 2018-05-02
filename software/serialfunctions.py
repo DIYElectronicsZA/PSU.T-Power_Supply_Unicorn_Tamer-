@@ -1,6 +1,7 @@
 import logging
 import sys
 import serial
+import time
 
 #Setup Debug Logging
 #From https://inventwithpython.com/blog/2012/04/06/stop-using
@@ -168,3 +169,13 @@ class SerialPort(object):
             SerialPort.ser.close()
         except:
             print "Kill me BEN!"
+    
+    def offset_calculator(self):
+        """Function to resset offset for amps"""
+        for serial_output in SerialPort.ser:
+            try:
+                serial_output = serial_output.split(',')
+                offset = int(serial_output[2])
+                print offset
+                #SerialPort.ser.close()
+            except: continue

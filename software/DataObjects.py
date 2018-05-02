@@ -64,10 +64,11 @@ class DataObject(object):
             DataObject.volt_ranges = "In range"
 
     #Method to check if current falls within parameters
-    def checkerrorcurrent(self, amps, amps_ranges, Amax, Amin):
+    def checkerrorcurrent(self, amps, amps_ranges, Amax, Amin, offset):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
         datestr = time.strftime("%Y-%m-%d")
         #while DataObject.serial_port.error_on > 0:
+        amps = (float(amps) - float(offset))
         if float(Amin) > float(amps):
             DataObject.amps_ranges = "Below range"
             DataObject.error_marker = DataObject.error_marker + 1
