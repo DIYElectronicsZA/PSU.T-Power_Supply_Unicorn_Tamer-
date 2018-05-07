@@ -98,7 +98,7 @@ class UserDisplayPanel(wx.Panel):
         Settings_label.SetForegroundColour(wx.Colour(51,63,221))
 
         #Time label and textcntrl input for how long program should run
-        Time_label = wx.StaticText(self, wx.ID_ANY, "Time")
+        Time_label = wx.StaticText(self, wx.ID_ANY, "Time in minutes    ")
         Time_label.SetFont(font2)
         self.Time_input = wx.TextCtrl(self, wx.ID_ANY, "10")
         #TODO: Error check, to ensure int is entered
@@ -430,7 +430,8 @@ class UserDisplayPanel(wx.Panel):
         """Function to start serial_data function in serialfunctions"""
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
-
+        t2 = threading.Thread(target=self.time_taken)
+        t2.start()
     def update_serial_display(self):
         """Function to update bottom panel display to current serial values"""
         #Update for volts value
@@ -456,7 +457,17 @@ class UserDisplayPanel(wx.Panel):
         #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
 
        
-    
+        def time_taken(self):
+            timer_val = self.Time_input.GetValue()
+            timer_val = int(timer_val)
+            timer_val = timer_val * 60
+            while timer_val > 0:
+                time.sleep(1)
+                timer_val = timer_val - 1
+                print timer_val
+            if timer_val == 0:
+                self.IsOpen = False 
+
     def stop_serial(self,event):
         """function to stop serial connection"""
         UserDisplayPanel.serial_port.close_serial()
