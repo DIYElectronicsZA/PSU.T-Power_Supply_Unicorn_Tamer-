@@ -39,6 +39,7 @@ class SerialPort(object):
     volts2 = '0'
     amps2 = '0'
     temp2 = '0'
+    error_on = 0
     Serial_dict = []
     Serial_dict_2 = []
     #error_on = 0

@@ -12,8 +12,6 @@ import numpy as np
 import csv
 #import matplotlib.py as plt
 from serialfunctions import SerialPort
-from GraphPanels import GraphPanel
-from GraphPanels import GraphPanel_2
 import threading
 from DataObjects import DataObject
 from numpy import arange, sin, pi
@@ -42,7 +40,7 @@ ch.setLevel(logging.DEBUG)
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 logger.debug('Welcome to Power Supply Unicorn Tamer :)')
- 
+
 #Initiation class
 class MainApp(wx.Frame):
     def __init__(self, parent, title):
@@ -201,7 +199,10 @@ class UserDisplayPanel(wx.Panel):
         self.temp_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.temp_range.SetFont(font2)
         self.Bind(wx.EVT_CLOSE, self.stop_serial)
-        
+
+        self.pass_fail = wx.StaticText(self, wx.ID_ANY, "Pass")
+        self.pass_fail.SetForegroundColour((0,100,0))
+        self.pass_fail.SetFont(font2)        
 
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
@@ -213,6 +214,8 @@ class UserDisplayPanel(wx.Panel):
         Setting_sizer.Add(Settings_label,0, wx.ALL, 5)
         
         #Time input sizer
+        threshold_sizer = wx.BoxSizer(wx.VERTICAL)
+        threshold_sizer.Add(self.pass_fail, 0, wx.ALL, 5)
         time_input_sizer = wx.BoxSizer(wx.HORIZONTAL)
         time_input_sizer.Add(Time_label, 0, wx.ALL,5)
         time_input_sizer.Add(self.Time_input,0, wx.ALL, 5)
@@ -297,7 +300,8 @@ class UserDisplayPanel(wx.Panel):
         error_sizer = wx.BoxSizer(wx.HORIZONTAL)
         error_sizer.Add(error_marker, 0, wx.ALL, 5)
         error_sizer.Add(self.error_marker_update,0, wx.ALL,5)
-
+        error_sizer.Add(threshold_sizer,0, wx.ALL,5)
+ 
         #Channel 1 volts, amps, temp, power values sizer
         channel1_sizer = wx.BoxSizer(wx.VERTICAL)
         channel1_sizer.Add(error_sizer, 0 ,wx.ALL|wx.EXPAND,5)
@@ -419,12 +423,12 @@ class UserDisplayPanel(wx.Panel):
         Tmin_input = int(self.Min_temp_input.GetValue())
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
-        UserDisplayPanel.data_object.checkerrorcurrent(amps= UserDisplayPanel.serial_port.amps, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = float(UserDisplayPanel.offset))
+        UserDisplayPanel.data_object.checkerrorcurrent(amps= UserDisplayPanel.serial_port.amps, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = UserDisplayPanel.offset)
         UserDisplayPanel.data_object.checkerrortemp(temp = UserDisplayPanel.serial_port.temp, temp_ranges= "", Tmax = Tmax_input, Tmin = Tmin_input)
 
         UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
-        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = float(UserDisplayPanel.offset))
+        UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = UserDisplayPanel.offset)
 
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
@@ -450,6 +454,9 @@ class UserDisplayPanel(wx.Panel):
         #Update for Temp value
         self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
         self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
+        if int(UserDisplayPanel.data_object.error_marker) > 10:
+            self.pass_fail.SetForegroundColour((255,0,0))
+            self.pass_fail.SetLabel("Fail")
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
         self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
@@ -468,7 +475,7 @@ class UserDisplayPanel(wx.Panel):
         """Timer used to track serial"""
         if self.timer.IsRunning():
             self.timer.Stop()
-            
+
             #self.toggleBtn.SetLabel("Start")
             print "timer stopped!"
         else:
@@ -517,7 +524,7 @@ class UserDisplayPanel(wx.Panel):
                     writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Current'})
                 if min_temp > temp or max_temp < temp:
                     writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Temperature'})
-            
+            csvfile.close()
 
             for values in SerialPort.Serial_dict_2:
                 volt = int(values[1])
@@ -529,8 +536,7 @@ class UserDisplayPanel(wx.Panel):
                     writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Current'})
                 if min_temp > temp or max_temp < temp:
                     writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Temperature'})
-            csvfile.close()
-
+        
         with open('Power_supply_tester_Results.csv', 'w') as csvfile:
             fieldnames = ['Channel','Test number', 'Voltage', 'Current', 'Temperature']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -549,7 +555,6 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Create tryexcepts for values input by user
 #TODO: Allow user to save txt file of log
 
-    
 app = wx.App(False)
 MainApp(None, "PS Unicorn")
 app.MainLoop()
