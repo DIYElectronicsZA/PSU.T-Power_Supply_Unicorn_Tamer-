@@ -56,7 +56,7 @@ class MainApp(wx.Frame):
         fileMenu = wx.Menu() #Menu to add to menubar
         fitem = fileMenu.Append(wx.ID_SAVEAS, 'Save as csv', 'Save as')
         self.Bind(wx.EVT_MENU, self.Panel_1.saving_serial, fitem)
-        #wx.EVT_MENU(self, wx.ID_SAVEAS, UserDisplayPanel.saving_serial)
+        wx.EVT_MENU(self, wx.ID_SAVEAS, UserDisplayPanel.saving_serial)
         menubar.Append(fileMenu, '&File')
         self.SetMenuBar(menubar) #Adds menu list to menubar
 
@@ -106,7 +106,7 @@ class UserDisplayPanel(wx.Panel):
         #Min and Max Voltage label and text control input for parameters in logic
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
         Min_volt_label.SetFont(font2)
-        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "11")
+        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "10")
 
         Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage  ")
         Max_volt_label.SetFont(font2)
@@ -117,22 +117,22 @@ class UserDisplayPanel(wx.Panel):
         #Min and Max Current label and text control input for parameters in logic
         Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
         Min_Amp_label.SetFont(font2)
-        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "8")
+        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "5")
 
         Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current   ")
         Max_Amp_label.SetFont(font2)
-        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "12")
+        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "9")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         ##Min and Max Temperature label and text control input for parameters in logic
         Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C)")
         Min_temp_label.SetFont(font2)
-        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "40")
+        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "10")
 
         Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C)")
         Max_temp_label.SetFont(font2)
-        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "10")
+        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "50")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
@@ -160,12 +160,12 @@ class UserDisplayPanel(wx.Panel):
         Amp_offset_1.Bind(wx.EVT_BUTTON, self.refresh_amps)
         Amp_offset_2 = wx.Button(self, wx.ID_ANY, label= "Ch2 amps offset reset") #Refresh port button
         Amp_offset_1.Bind(wx.EVT_BUTTON, self.refresh_amps)
-        Amp_value = wx.StaticText(self, wx.ID_ANY, "0")
+        #Amp_value = wx.StaticText(self, wx.ID_ANY, "0")
         #Labels and values to update via logic for the current volt, current and temperature
         error_marker = wx.StaticText(self, wx.ID_ANY, "Number of errors: ")
         self.error_marker_update = wx.StaticText(self, wx.ID_ANY, "0")
         error_marker.SetFont(font2)
-        self.error_marker_update2 = wx.StaticText(self, wx.ID_ANY, "0")
+        self.error_marker_update2 = wx.StaticText(self, wx.ID_ANY, "")
         self.error_marker_update.SetFont(font3)
         self.error_marker_update2.SetFont(font3)
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
@@ -207,7 +207,10 @@ class UserDisplayPanel(wx.Panel):
         self.temp_range.SetFont(font2)
         self.temp_range_2.SetFont(font2)
         self.Bind(wx.EVT_CLOSE, self.stop_serial)
-        
+
+        self.pass_fail = wx.StaticText(self, wx.ID_ANY, "Pass")
+        self.pass_fail.SetForegroundColour((0,100,0))
+        self.pass_fail.SetFont(font2)       
 
         #Sizers used to insert widgets
         Overal_sizer       = wx.BoxSizer(wx.VERTICAL) #Largest sizer
@@ -219,6 +222,9 @@ class UserDisplayPanel(wx.Panel):
         Setting_sizer.Add(Settings_label,0, wx.ALL, 5)
         
         #Time input sizer
+        threshold_sizer = wx.BoxSizer(wx.VERTICAL)
+        threshold_sizer.Add(self.pass_fail, 0, wx.ALL, 5)
+
         time_input_sizer = wx.BoxSizer(wx.HORIZONTAL)
         time_input_sizer.Add(Time_label, 0, wx.ALL,5)
         time_input_sizer.Add(self.Time_input,0, wx.ALL, 5)
@@ -305,7 +311,8 @@ class UserDisplayPanel(wx.Panel):
         error_sizer = wx.BoxSizer(wx.HORIZONTAL)
         error_sizer.Add(error_marker, 0, wx.ALL, 5)
         error_sizer.Add(self.error_marker_update,0, wx.ALL,5)
-
+        error_sizer.Add(threshold_sizer,0, wx.ALL,5)
+ 
         #Channel 1 volts, amps, temp, power values sizer
         channel1_sizer = wx.BoxSizer(wx.VERTICAL)
         channel1_sizer.Add(error_sizer, 0 ,wx.ALL|wx.EXPAND,5)
@@ -459,6 +466,9 @@ class UserDisplayPanel(wx.Panel):
         #Update for Temp value
         self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
         self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
+        if int(UserDisplayPanel.data_object.error_marker) > 10:
+            self.pass_fail.SetForegroundColour((255,0,0))
+            self.pass_fail.SetLabel("Fail")
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
         self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
@@ -530,9 +540,21 @@ class UserDisplayPanel(wx.Panel):
             min_temp = self.Min_temp_input.GetValue()
         
             for values in SerialPort.Serial_dict:
-                volt = int(values[1])
-                amp = int(values[2])
-                temp = int(values[3])
+                volt = float(values[1])
+                amp = float(values[2])
+                temp = float(values[3])
+                if min_volt > volt or max_volt < volt:
+                    writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Voltage'})
+                if min_amp > amp or max_amp < amp:
+                    writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Current'})
+                if min_temp > temp or max_temp < temp:
+                    writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Temperature'})
+            
+
+            for values in SerialPort.Serial_dict_2:
+                volt = float(values[1])
+                amp = float(values[2])
+                temp = float(values[3])
                 if min_volt > volt or max_volt < volt:
                     writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Voltage'})
                 if min_amp > amp or max_amp < amp:
@@ -540,18 +562,7 @@ class UserDisplayPanel(wx.Panel):
                 if min_temp > temp or max_temp < temp:
                     writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Temperature'})
             csvfile.close()
-
-            for values in SerialPort.Serial_dict_2:
-                volt = int(values[1])
-                amp = int(values[2])
-                temp = int(values[3])
-                if min_volt > volt or max_volt < volt:
-                    writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Voltage'})
-                if min_amp > amp or max_amp < amp:
-                    writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Current'})
-                if min_temp > temp or max_temp < temp:
-                    writer.writerow({'Channel': values[0][0], 'Test number': values[0][0:], 'Voltage': values[1], 'Current': values[2], 'Temperature': values[3], 'Point of error': 'Temperature'})
-        
+            
         with open('Power_supply_tester_Results.csv', 'w') as csvfile:
             fieldnames = ['Channel','Test number', 'Voltage', 'Current', 'Temperature']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
