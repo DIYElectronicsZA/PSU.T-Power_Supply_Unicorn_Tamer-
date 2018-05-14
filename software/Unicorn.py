@@ -158,12 +158,12 @@ class UserDisplayPanel(wx.Panel):
         Amp_offset_1.Bind(wx.EVT_BUTTON, self.refresh_amps)
         Amp_offset_2 = wx.Button(self, wx.ID_ANY, label= "Ch2 amps offset reset") #Refresh port button
         Amp_offset_1.Bind(wx.EVT_BUTTON, self.refresh_amps)
-        Amp_value = wx.StaticText(self, wx.ID_ANY, "0")
+        #Amp_value = wx.StaticText(self, wx.ID_ANY, "0")
         #Labels and values to update via logic for the current volt, current and temperature
         error_marker = wx.StaticText(self, wx.ID_ANY, "Number of errors: ")
         self.error_marker_update = wx.StaticText(self, wx.ID_ANY, "0")
         error_marker.SetFont(font2)
-        self.error_marker_update2 = wx.StaticText(self, wx.ID_ANY, "0")
+        self.error_marker_update2 = wx.StaticText(self, wx.ID_ANY, "")
         self.error_marker_update.SetFont(font3)
         self.error_marker_update2.SetFont(font3)
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
@@ -173,6 +173,7 @@ class UserDisplayPanel(wx.Panel):
         self.volts_value_update.SetFont(font3)
         self.volts_value_update_2.SetFont(font3)
         self.volts_value_update.SetForegroundColour(wx.Colour(153,17,37))
+        self.volts_value_update_2.SetForegroundColour(wx.Colour(153,17,37))
         Amps_value = wx.StaticText(self, wx.ID_ANY, "Current Amps:")
         Amps_value.SetFont(font2)
         self.Amps_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Amps")
@@ -180,6 +181,7 @@ class UserDisplayPanel(wx.Panel):
         self.Amps_value_update.SetFont(font3)
         self.Amps_value_update_2.SetFont(font3)
         self.Amps_value_update.SetForegroundColour(wx.Colour(153,17,37))
+        self.Amps_value_update_2.SetForegroundColour(wx.Colour(153,17,37))
         Temp_value = wx.StaticText(self, wx.ID_ANY, "Current Temp:")
         Temp_value.SetFont(font2)
         self.Temp_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Temp")
@@ -187,17 +189,31 @@ class UserDisplayPanel(wx.Panel):
         self.Temp_value_update.SetFont(font3)
         self.Temp_value_update_2.SetFont(font3)
         self.Temp_value_update.SetForegroundColour(wx.Colour(153,17,37))
+        self.Temp_value_update_2.SetForegroundColour(wx.Colour(153,17,37))
         Power_value = wx.StaticText(self, wx.ID_ANY, "Current Power: ")
         Power_value.SetFont(font2)
         self.power_value_update = wx.StaticText(self, wx.ID_ANY, "Power Output")
+        self.power_value_update_2 = wx.StaticText(self, wx.ID_ANY, "Power Output 2")
+        self.power_value_update_2.SetFont(font3)
         self.power_value_update.SetFont(font3)
         self.power_value_update.SetForegroundColour(wx.Colour(153,17,37))
+        self.power_value_update_2.SetForegroundColour(wx.Colour(153,17,37))
         self.volt_range = wx.StaticText(self, wx.ID_ANY, "                      ")
+        self.power_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.volt_range.SetFont(font2)
+        self.power_range.SetFont(font2)
         self.amp_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.amp_range.SetFont(font2)
         self.temp_range = wx.StaticText(self, wx.ID_ANY, "                      ")
         self.temp_range.SetFont(font2)
+        self.volt_range_2 = wx.StaticText(self, wx.ID_ANY, "                      ")
+        self.power_range_2 = wx.StaticText(self, wx.ID_ANY, "                      ")
+        self.volt_range_2.SetFont(font2)
+        self.power_range_2.SetFont(font2)
+        self.amp_range_2 = wx.StaticText(self, wx.ID_ANY, "                      ")
+        self.amp_range_2.SetFont(font2)
+        self.temp_range_2 = wx.StaticText(self, wx.ID_ANY, "                      ")
+        self.temp_range_2.SetFont(font2)
         self.Bind(wx.EVT_CLOSE, self.stop_serial)
 
         self.pass_fail = wx.StaticText(self, wx.ID_ANY, "Pass")
@@ -274,6 +290,7 @@ class UserDisplayPanel(wx.Panel):
         Volts_sizer.Add(self.volt_range,0, wx.ALL,5)
         Volts_sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         Volts_sizer_2.Add(self.volts_value_update_2,0,wx.ALL, 5)
+        Volts_sizer_2.Add(self.volt_range_2,0, wx.ALL,5)
 
         #Amp display sizer
         Amp_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -282,6 +299,7 @@ class UserDisplayPanel(wx.Panel):
         Amp_sizer.Add(self.amp_range,0, wx.ALL,5)
         Amp_sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         Amp_sizer_2.Add(self.Amps_value_update_2,0,wx.ALL, 5)
+        Amp_sizer_2.Add(self.amp_range_2,0,wx.ALL, 5)
 
         #Temp display sizer
         Temp_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -290,11 +308,16 @@ class UserDisplayPanel(wx.Panel):
         Temp_sizer.Add(self.temp_range,0, wx.ALL,5)
         Temp_sizer_2= wx.BoxSizer(wx.HORIZONTAL)
         Temp_sizer_2.Add(self.Temp_value_update_2,0,wx.ALL, 5)
+        Temp_sizer_2.Add(self.temp_range_2,0, wx.ALL,5)
 
         #power display sizer
         power_sizer = wx.BoxSizer(wx.HORIZONTAL)
         power_sizer.Add(Power_value, 0 , wx.ALL, 5)
         power_sizer.Add(self.power_value_update,0 , wx.ALL, 5)
+        power_sizer.Add(self.power_range,0 , wx.ALL, 5)
+        power_sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        power_sizer_2.Add(self.power_value_update_2,0,wx.ALL, 5)
+        power_sizer_2.Add(self.power_range_2,0,wx.ALL, 5)
 
         #Error marker sizer
         error_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -320,7 +343,8 @@ class UserDisplayPanel(wx.Panel):
         channel2_sizer.Add(error_sizer2,0, wx.ALL,5)
         channel2_sizer.Add(Volts_sizer_2, 0, wx.ALL, 5)
         channel2_sizer.Add(Amp_sizer_2,0, wx.ALL,5)
-        channel2_sizer.Add(Temp_sizer_2,0, wx.ALL,5)   
+        channel2_sizer.Add(Temp_sizer_2,0, wx.ALL,5)
+        channel2_sizer.Add(power_sizer_2,0, wx.ALL,5)    
         #Adding Ports components, Volt display, Amp display and Temp display to BOTTOM Panel
         combo_channel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         breaker_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -421,15 +445,14 @@ class UserDisplayPanel(wx.Panel):
         Amin_input = int(self.Min_Amp_input.GetValue())
         Tmax_input = int(self.Max_temp_input.GetValue())
         Tmin_input = int(self.Min_temp_input.GetValue())
-        UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
+        self.power_1 = UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
         UserDisplayPanel.data_object.checkerrorcurrent(amps= UserDisplayPanel.serial_port.amps, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = UserDisplayPanel.offset)
         UserDisplayPanel.data_object.checkerrortemp(temp = UserDisplayPanel.serial_port.temp, temp_ranges= "", Tmax = Tmax_input, Tmin = Tmin_input)
 
-        UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
+        self.power_2 = UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = UserDisplayPanel.offset)
-
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
@@ -445,7 +468,7 @@ class UserDisplayPanel(wx.Panel):
         #Update for Temp value
         self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp + u"\N{DEGREE SIGN}" + "C")
         #Update power value
-        self.power_value_update.SetLabel(UserDisplayPanel.data_object.power)
+        self.power_value_update_2.SetLabel(self.power_2)
         #Update of range values
         #Update for volts value
         self.volts_value_update_2.SetLabel(UserDisplayPanel.serial_port.volts2 + " V")
@@ -453,6 +476,7 @@ class UserDisplayPanel(wx.Panel):
         self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2 + " A")
         #Update for Temp value
         self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
+        self.power_value_update.SetLabel(self.power_1)
         self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
         if int(UserDisplayPanel.data_object.error_marker) > 10:
             self.pass_fail.SetForegroundColour((255,0,0))
@@ -460,6 +484,11 @@ class UserDisplayPanel(wx.Panel):
         self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
         self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
         self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
+        self.power_range.SetLabel(UserDisplayPanel.data_object.power_ranges)
+        self.volt_range_2.SetLabel(UserDisplayPanel.data_object.volt_ranges)
+        self.amp_range_2.SetLabel(UserDisplayPanel.data_object.amps_ranges)
+        self.temp_range_2.SetLabel(UserDisplayPanel.data_object.temp_ranges)
+        self.power_range_2.SetLabel(UserDisplayPanel.data_object.power_ranges)
         #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
 
        

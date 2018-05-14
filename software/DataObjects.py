@@ -18,6 +18,7 @@ class DataObject(object):
     volt_ranges = "nothing"
     amps_ranges = "nothing"
     temp_ranges = "nothing"
+    power_ranges = "Watts"
     power = ""
     serial_port = SerialPort()
     #graph_panel = GraphPanel()
@@ -45,9 +46,13 @@ class DataObject(object):
     #Method to calculate power using voltage and amps coming from serial
     def calculatepower (self, volts, amps):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
-        DataObject.power = float(volts) * float(amps)
-        DataObject.power = str(DataObject.power)
-
+        try:
+            DataObject.power = float(volts) * float(amps)
+            DataObject.power = str(DataObject.power)
+            return DataObject.power
+        except:
+            pass
+            
     #Method to check if voltage falls within parameters
     def checkerrorvoltage(self, volts, volt_ranges, Vmax, Vmin):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
@@ -59,6 +64,7 @@ class DataObject(object):
             DataObject.error_marker = DataObject.error_marker + 1
         elif float(Vmax) < float(volts):
             DataObject.volt_ranges = "Above range"
+            DataObject.power_ranges = "Above range"
             DataObject.error_marker = DataObject.error_marker + 1
         else:
             DataObject.volt_ranges = "In range"
