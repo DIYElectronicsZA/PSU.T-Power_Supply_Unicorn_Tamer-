@@ -133,7 +133,7 @@ class UserDisplayPanel(wx.Panel):
         Max_temp_label.SetFont(font2)
         self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "60")
         #TODO: Error check, to ensure int is entered
-        #TODO: Set user friendly default values
+
 
         #Start/Stop button to start or end the program
         #Start_Stop_button = wx.Button(self, label = "Submit")
@@ -167,6 +167,10 @@ class UserDisplayPanel(wx.Panel):
         self.error_marker_update2 = wx.StaticText(self, wx.ID_ANY, "")
         self.error_marker_update.SetFont(font3)
         self.error_marker_update2.SetFont(font3)
+        time_left = wx.StaticText(self, wx.ID_ANY, "Time left: ")
+        self.time_left_update = wx.StaticText(self, wx.ID_ANY, "0")
+        time_left.SetFont(font2)
+        self.time_left_update.SetFont(font2)
         volts_value = wx.StaticText(self, wx.ID_ANY, "Current Volts:")
         volts_value.SetFont(font2)
         self.volts_value_update = wx.StaticText(self, wx.ID_ANY, "Serial Volts")
@@ -320,14 +324,21 @@ class UserDisplayPanel(wx.Panel):
         power_sizer_2.Add(self.power_value_update_2,0,wx.ALL, 5)
         power_sizer_2.Add(self.power_range_2,0,wx.ALL, 5)
 
+        #Time sizer
+        time_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        time_sizer.Add(time_left,0, wx.ALL,5)
+        time_sizer.Add(self.time_left_update,0, wx.ALL,5)
+
         #Error marker sizer
         error_sizer = wx.BoxSizer(wx.HORIZONTAL)
         error_sizer.Add(error_marker, 0, wx.ALL, 5)
         error_sizer.Add(self.error_marker_update,0, wx.ALL,5)
         error_sizer.Add(threshold_sizer,0, wx.ALL,5)
- 
+
+
         #Channel 1 volts, amps, temp, power values sizer
         channel1_sizer = wx.BoxSizer(wx.VERTICAL)
+        channel1_sizer.Add(time_sizer, 0 ,wx.ALL|wx.EXPAND,5)
         channel1_sizer.Add(error_sizer, 0 ,wx.ALL|wx.EXPAND,5)
         channel1_sizer.Add(Volts_sizer, 0, wx.ALL|wx.EXPAND, 5)
         channel1_sizer.Add(Amp_sizer,0, wx.ALL|wx.EXPAND,5)
@@ -341,6 +352,7 @@ class UserDisplayPanel(wx.Panel):
         #Channel 2 sizer
 
         channel2_sizer = wx.BoxSizer(wx.VERTICAL)
+        channel2_sizer.Add(error_sizer2,0, wx.ALL,5)
         channel2_sizer.Add(error_sizer2,0, wx.ALL,5)
         channel2_sizer.Add(Volts_sizer_2, 0, wx.ALL, 5)
         channel2_sizer.Add(Amp_sizer_2,0, wx.ALL,5)
@@ -469,13 +481,18 @@ class UserDisplayPanel(wx.Panel):
             self.temp_range_2.SetLabel(UserDisplayPanel.data_object.temp_ranges)
             self.power_range_2.SetLabel(UserDisplayPanel.data_object.power_ranges)
             #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
+            minutes, seconds= divmod(self.time, 60)
+            self.time_left_update.SetLabel(str(minutes) + ":" + str(seconds))
        
     
     def stop_serial(self,event):
         """function to stop serial connection"""
         UserDisplayPanel.serial_port.close_serial()
+        self.time = 0
+        self.time_left_update.SetLabel("0:00")
         return UserDisplayPanel.update_serial_display
         return UserDisplayPanel.update
+
         event.Skip()
 
     def onToggle(self, event):
@@ -557,7 +574,6 @@ class UserDisplayPanel(wx.Panel):
 #TODO: Creat realtime graphs of serial data collected
 #TODO: Create log of values from serial in readable format
 #TODO: Add timer to show when program will end
-#TODO: Cut program off at user input timer
 #TODO: Change layout to user friendlyness
 #TODO: Create tryexcepts for values input by user
 #TODO: Allow user to save txt file of log
