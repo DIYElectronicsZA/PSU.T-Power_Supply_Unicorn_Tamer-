@@ -77,12 +77,13 @@ class UserDisplayPanel(wx.Panel):
     port_to_connect = ""
     time = 0
     offset = 0
+    
+    
 
     def __init__(self, parent):
         """Class Constructor"""
         wx.Panel.__init__(self, parent=parent)
         self.frame = parent
-        
         #Different font styles used throughout the display
         font  = wx.Font(34, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         font2 = wx.Font(14, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
@@ -104,7 +105,7 @@ class UserDisplayPanel(wx.Panel):
         #Min and Max Voltage label and text control input for parameters in logic
         Min_volt_label = wx.StaticText(self, wx.ID_ANY, "Minimum Voltage  ")
         Min_volt_label.SetFont(font2)
-        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "11")
+        self.Min_volt_input = wx.TextCtrl(self, wx.ID_ANY, "10")
 
         Max_volt_label = wx.StaticText(self, wx.ID_ANY, "Maximum Voltage  ")
         Max_volt_label.SetFont(font2)
@@ -115,22 +116,22 @@ class UserDisplayPanel(wx.Panel):
         #Min and Max Current label and text control input for parameters in logic
         Min_Amp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Current   ")
         Min_Amp_label.SetFont(font2)
-        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "8")
+        self.Min_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "5")
 
         Max_Amp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Current   ")
         Max_Amp_label.SetFont(font2)
-        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "12")
+        self.Max_Amp_input = wx.TextCtrl(self, wx.ID_ANY, "9")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
         ##Min and Max Temperature label and text control input for parameters in logic
         Min_temp_label = wx.StaticText(self, wx.ID_ANY, "Minimum Temp(C)")
         Min_temp_label.SetFont(font2)
-        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "40")
+        self.Min_temp_input = wx.TextCtrl(self, wx.ID_ANY, "20")
 
         Max_temp_label = wx.StaticText(self, wx.ID_ANY, "Maximum Temp(C)")
         Max_temp_label.SetFont(font2)
-        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "10")
+        self.Max_temp_input = wx.TextCtrl(self, wx.ID_ANY, "60")
         #TODO: Error check, to ensure int is entered
         #TODO: Set user friendly default values
 
@@ -161,7 +162,7 @@ class UserDisplayPanel(wx.Panel):
         #Amp_value = wx.StaticText(self, wx.ID_ANY, "0")
         #Labels and values to update via logic for the current volt, current and temperature
         error_marker = wx.StaticText(self, wx.ID_ANY, "Number of errors: ")
-        self.error_marker_update = wx.StaticText(self, wx.ID_ANY, "0")
+        self.error_marker_update = wx.StaticText(self, wx.ID_ANY, "000")
         error_marker.SetFont(font2)
         self.error_marker_update2 = wx.StaticText(self, wx.ID_ANY, "")
         self.error_marker_update.SetFont(font3)
@@ -382,36 +383,6 @@ class UserDisplayPanel(wx.Panel):
     def on_close(self, event):
         UserDisplayPanel.read_serial.exit()
 
-
-    def update_range_values(self,event):
-        """Function to get values entered by user and use as values for ranges"""
-        max_volts = self.Max_volt_input.GetValue()
-        max_volts = float(max_volts)
-        UserDisplayPanel.data_object.Vmax = max_volts
-
-        min_volts = self.Min_volt_input.GetValue()
-        min_volts = float(min_volts)
-        UserDisplayPanel.data_object.Vmin = min_volts
-        
-        max_amps = self.Max_Amp_input.GetValue()
-        max_amps = float(max_amps)
-        UserDisplayPanel.data_object.Amax = max_amps
-        
-        min_amps = self.Min_Amp_input.GetValue()
-        min_amps = float(min_amps)
-        UserDisplayPanel.data_object.Amin = min_amps
-        
-        max_temp = self.Max_temp_input.GetValue()
-        max_temp = float(max_temp)
-        UserDisplayPanel.data_object.Tmax = max_temp
-        
-        min_temp = self.Min_temp_input.GetValue()
-        min_temp = float(min_temp)
-        UserDisplayPanel.data_object.Tmin = min_temp
-        UserDisplayPanel.time = self.Time_input.GetValue()
-        
-        print UserDisplayPanel.time
-        event.Skip()
     
     def refresh_dropdown(self,event):
         ''' Method to refresh the list showing in the combobox found in the Bottom Panel in UserDisplayPanel ''' 
@@ -435,6 +406,9 @@ class UserDisplayPanel(wx.Panel):
             self.port_select_error.SetLabel("Port opened")
             #self.update_serial_display() 
             self.read_serial()
+            self.time = self.Time_input.GetValue()
+            self.time = int(self.time)
+            self.time = self.time * 60
         event.Skip()
 
     def get_range_values(self):
@@ -445,6 +419,9 @@ class UserDisplayPanel(wx.Panel):
         Amin_input = int(self.Min_Amp_input.GetValue())
         Tmax_input = int(self.Max_temp_input.GetValue())
         Tmin_input = int(self.Min_temp_input.GetValue())
+
+        self.time = self.time - 1
+        print self.time
         self.power_1 = UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts, amps = UserDisplayPanel.serial_port.amps)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
         UserDisplayPanel.data_object.checkerrorcurrent(amps= UserDisplayPanel.serial_port.amps, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = UserDisplayPanel.offset)
@@ -453,44 +430,45 @@ class UserDisplayPanel(wx.Panel):
         self.power_2 = UserDisplayPanel.data_object.calculatepower(volts =UserDisplayPanel.serial_port.volts2, amps = UserDisplayPanel.serial_port.amps2)
         UserDisplayPanel.data_object.checkerrorvoltage(volts =UserDisplayPanel.serial_port.volts2, volt_ranges= "", Vmax = Vmax_input, Vmin = Vmin_input)
         UserDisplayPanel.data_object.checkerrorcurrent(amps = UserDisplayPanel.serial_port.amps2, amps_ranges= "", Amax = Amax_input, Amin = Amin_input, offset = UserDisplayPanel.offset)
+
     def read_serial(self):
         """Function to start serial_data function in serialfunctions"""
         t = threading.Thread(target=UserDisplayPanel.serial_port.serial_data) 
         t.start()
 
     def update_serial_display(self):
-        """Function to update bottom panel display to current serial values"""
-        #Update for volts value
-        self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts + " V")
-        #Update for Amp value
-        Amp_to_d = (float(UserDisplayPanel.serial_port.amps) - float(UserDisplayPanel.offset))
-        self.Amps_value_update.SetLabel(str(Amp_to_d) + " A")
-        #Update for Temp value
-        self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp + u"\N{DEGREE SIGN}" + "C")
-        #Update power value
-        self.power_value_update_2.SetLabel(self.power_2)
-        #Update of range values
-        #Update for volts value
-        self.volts_value_update_2.SetLabel(UserDisplayPanel.serial_port.volts2 + " V")
-        #Update for Amp value
-        self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2 + " A")
-        #Update for Temp value
-        self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
-        self.power_value_update.SetLabel(self.power_1)
-        self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
-        if int(UserDisplayPanel.data_object.error_marker) > 10:
-            self.pass_fail.SetForegroundColour((255,0,0))
-            self.pass_fail.SetLabel("Fail")
-        self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
-        self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
-        self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
-        self.power_range.SetLabel(UserDisplayPanel.data_object.power_ranges)
-        self.volt_range_2.SetLabel(UserDisplayPanel.data_object.volt_ranges)
-        self.amp_range_2.SetLabel(UserDisplayPanel.data_object.amps_ranges)
-        self.temp_range_2.SetLabel(UserDisplayPanel.data_object.temp_ranges)
-        self.power_range_2.SetLabel(UserDisplayPanel.data_object.power_ranges)
-        #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
-
+        if self.time > 0:
+            """Function to update bottom panel display to current serial values"""
+            #Update for volts value
+            self.volts_value_update.SetLabel(UserDisplayPanel.serial_port.volts + " V")
+            #Update for Amp value
+            Amp_to_d = (float(UserDisplayPanel.serial_port.amps) - float(UserDisplayPanel.offset))
+            self.Amps_value_update.SetLabel(str(Amp_to_d) + " A")
+            #Update for Temp value
+            self.Temp_value_update.SetLabel(UserDisplayPanel.serial_port.temp + u"\N{DEGREE SIGN}" + "C")
+            #Update power value
+            self.power_value_update_2.SetLabel(self.power_2)
+            #Update of range values
+            #Update for volts value
+            self.volts_value_update_2.SetLabel(UserDisplayPanel.serial_port.volts2 + " V")
+            #Update for Amp value
+            self.Amps_value_update_2.SetLabel(UserDisplayPanel.serial_port.amps2 + " A")
+            #Update for Temp value
+            self.Temp_value_update_2.SetLabel(UserDisplayPanel.serial_port.temp2 + u"\N{DEGREE SIGN}" + "C")
+            self.power_value_update.SetLabel(self.power_1)
+            self.error_marker_update.SetLabel(str(UserDisplayPanel.data_object.error_marker))
+            if int(UserDisplayPanel.data_object.error_marker) > 10:
+                self.pass_fail.SetForegroundColour((255,0,0))
+                self.pass_fail.SetLabel("Fail")
+            self.volt_range.SetLabel(UserDisplayPanel.data_object.volt_ranges)
+            self.amp_range.SetLabel(UserDisplayPanel.data_object.amps_ranges)
+            self.temp_range.SetLabel(UserDisplayPanel.data_object.temp_ranges)
+            self.power_range.SetLabel(UserDisplayPanel.data_object.power_ranges)
+            self.volt_range_2.SetLabel(UserDisplayPanel.data_object.volt_ranges)
+            self.amp_range_2.SetLabel(UserDisplayPanel.data_object.amps_ranges)
+            self.temp_range_2.SetLabel(UserDisplayPanel.data_object.temp_ranges)
+            self.power_range_2.SetLabel(UserDisplayPanel.data_object.power_ranges)
+            #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
        
     
     def stop_serial(self,event):
