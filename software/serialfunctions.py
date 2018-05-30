@@ -177,6 +177,6 @@ class SerialPort(object):
             try:
                 serial_output = serial_output.split(',')
                 offset = int(serial_output[2])
-                print offset
+                #print offset
                 #SerialPort.ser.close()
             except: continue
