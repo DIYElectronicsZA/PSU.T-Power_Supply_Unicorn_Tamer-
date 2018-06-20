@@ -13,6 +13,7 @@ import numpy as np
 import csv
 #import matplotlib.py as plt
 from serialfunctions import SerialPort
+from GraphPanel import PanelOne
 import threading
 from DataObjects import DataObject
 from numpy import arange, sin, pi
@@ -42,6 +43,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 logger.debug('Welcome to Power Supply Unicorn Tamer :)')
 
+
 #Initiation class
 class MainApp(wx.Frame):
     def __init__(self, parent, title):
@@ -50,6 +52,8 @@ class MainApp(wx.Frame):
         self.Show(True) #Displays Frame
         # Init UserDisplayPanel class
         self.Panel_1 = UserDisplayPanel(self)
+
+
         menubar = wx.MenuBar() #Adds a menubar
         fileMenu = wx.Menu() #Menu to add to menubar
         fitem = fileMenu.Append(wx.ID_SAVEAS, 'Save as csv', 'Save as')
@@ -58,16 +62,18 @@ class MainApp(wx.Frame):
         menubar.Append(fileMenu, '&File')
         self.SetMenuBar(menubar) #Adds menu list to menubar
 
+
+
         #Using BoxSizer in wxPython to layout UserDisplayPanel
         sizer = wx.BoxSizer(wx.VERTICAL)
+
         sizer.Add(self.Panel_1, 0, wx.EXPAND|wx.ALL, 5)
         self.SetSizer(sizer)
         self.SetBackgroundColour('#E2E3F3')
         self.Fit ()
         self.Centre()
         self.Maximize(True)
-
-
+ 
 #Visual display for users made up of two panels
 class UserDisplayPanel(wx.Panel):
     
@@ -149,6 +155,8 @@ class UserDisplayPanel(wx.Panel):
         Select_port = wx.Button(self, wx.ID_ANY, label = 'Connect to port') #Select port button
         Select_port.Bind(wx.EVT_BUTTON, self.select_port)
         Select_port.Bind(wx.EVT_BUTTON, self.onToggle)
+        Refresh_all = wx.Button(self, wx.ID_ANY, label = "Refresh values")
+        Refresh_all.Bind(wx.EVT_BUTTON,self.ClearAll)
         Disconnect_port = wx.Button(self, wx.ID_ANY, label = "Disconnect")
         Disconnect_port.Bind(wx.EVT_BUTTON, self.stop_serial) #Disconnect from serial port
         Disconnect_port.Bind(wx.EVT_BUTTON, self.onToggle)
@@ -284,6 +292,7 @@ class UserDisplayPanel(wx.Panel):
         ports_sizer.Add(Select_port, 0 , wx.ALL, 5)
         ports_sizer.Add(port_refresh, 0, wx.ALL, 5)
         ports_sizer.Add(Disconnect_port, 0, wx.ALL, 5)
+        ports_sizer.Add(Refresh_all, 0, wx.ALL,5)
         offset_sizer.Add(Amp_offset_1, 0, wx.ALL, 5)
         offset_sizer.Add(Amp_offset_2, 0, wx.ALL, 5)
         
@@ -383,16 +392,50 @@ class UserDisplayPanel(wx.Panel):
         #messing around with timers https://www.blog.pythonlibrary.org/2009/08/25/wxpython-using-wx-timers/
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.update, self.timer)
- 
-        #self.toggleBtn = wx.Button(self, wx.ID_ANY, "Start")
-        #self.toggleBtn.Bind(wx.EVT_BUTTON, self.onToggle)
+
 
         self.SetSizer(Main_sizer)
         Main_sizer.Fit(self)
         self.Centre()
 
      # Function to stop serial when "x" is clicked
-    
+    def ClearAll(self, event):
+        #Update for volts value
+        self.volts_value_update.SetLabel(" 0 V")
+        #Update for Amp value
+        self.Amps_value_update.SetLabel(" 0 A")
+        self.Amps_value_update_2.SetLabel("0 A")
+        #Update for Temp value
+        self.Temp_value_update.SetLabel("0" + u"\N{DEGREE SIGN}" + "C")
+        #Update power value
+        self.power_value_update_2.SetLabel("0 W")
+        #Update of range values
+        #Update for volts value
+        self.volts_value_update_2.SetLabel("0 V")
+        #Update for Amp value
+        #Update for Temp value
+        self.Temp_value_update_2.SetLabel(" 0" + u"\N{DEGREE SIGN}" +  "C")
+        self.power_value_update.SetLabel("0 W")
+        self.error_marker_update.SetLabel("0")
+        self.pass_fail.SetForegroundColour((0,100,0))
+        self.pass_fail.SetLabel("PASS")
+        self.volt_range.SetLabel("")
+        self.amp_range.SetLabel("")
+        self.temp_range.SetLabel("")
+        self.power_range.SetLabel("")
+        self.volt_range_2.SetLabel("")
+        self.amp_range_2.SetLabel("")
+        self.temp_range_2.SetLabel("")
+        self.power_range_2.SetLabel("")
+        #self.temp_range.SetLabel(UserDisplayPanel.data_object.checkerrorvoltage.temp_ranges)
+        self.time_left_update.SetLabel("0")
+        self.port_select_error.SetLabel("Disconnected")
+        UserDisplayPanel.serial_port.close_serial()
+        self.time = 0
+        self.time_left_update.SetLabel("0:00")
+        return UserDisplayPanel.update_serial_display
+        return UserDisplayPanel.update     
+        
     def onExit(self, event):
         sys.exit()
         self.Close()

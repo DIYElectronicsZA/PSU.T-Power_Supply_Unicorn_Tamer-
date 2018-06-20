@@ -1,7 +1,6 @@
 import time
 import csv
-from serialfunctions import SerialPort
-from GraphPanels import GraphPanel
+from GraphPanel import PanelOne
 
 class DataObject(object):
     """Class used to compare values coming from serial and determine
@@ -20,8 +19,7 @@ class DataObject(object):
     temp_ranges = "nothing"
     power_ranges = "Watts"
     power = ""
-    serial_port = SerialPort()
-    #graph_panel = GraphPanel()
+
     def __init__(self, volts, amps, temp, Vmax, Vmin, Amax, Amin, Tmax, Tmin, port):
         """Class constructor"""
         
@@ -36,6 +34,7 @@ class DataObject(object):
         self.Tmax  = Tmax
         self.Tmin  = Tmin
         self.port = port
+        #self.graph_panel = panel_one.draw_graph(self,amps= 0, amps2= 0, volts = 0, volts2 = 0)
         #Index = Index+1        
     
     def changeclassvariables(self):
@@ -96,13 +95,11 @@ class DataObject(object):
             
 
     
-    def draw_graph(self):
-        self.figure = Figure()
-        self.axes = self.figure.add_subplot(111)
-        self.canvas = FigureCanvas(self, -1, self.figure)
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.SetSizer(self.sizer)
-        self.Fit()
+    def draw_graph2(self, amps, amps2, volts, volts2):
+        amps = 0
+        amps2 = 8
+        volts =5
+        volts2 = 6
+        self.graph_panel(amps, amps2, volts, volts2)
         
 

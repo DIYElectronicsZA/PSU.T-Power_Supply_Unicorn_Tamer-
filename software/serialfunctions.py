@@ -2,6 +2,7 @@ import logging
 import sys
 import serial
 import time
+from GraphPanel import PanelOne
 
 #Setup Debug Logging
 #From https://inventwithpython.com/blog/2012/04/06/stop-using
@@ -33,7 +34,7 @@ class SerialPort(object):
     ser = ""
     port = ''
     volts = '0'
-    amps = '0'
+    amps = '75'
     temp = '0'
     port2 = ''
     volts2 = '0'
@@ -42,6 +43,7 @@ class SerialPort(object):
     error_on = 0
     Serial_dict = []
     Serial_dict_2 = []
+    
     #error_on = 0
     #Listing available ports for serial
     def serial_ports_list(self):
@@ -94,6 +96,7 @@ class SerialPort(object):
         for serial_output in SerialPort.ser:
             try:
                 channels = int(serial_output[0])
+                
             except:
                 continue
                 #if serial_ouput isnt int
@@ -126,6 +129,7 @@ class SerialPort(object):
                     one_list.append(listing)
                     newtime = time.clock()
                     stime = np.append(stime, newtime)
+                    panel_one.drawBarGraph(amps = serial_output[2], amps2 = serial_output[2], volts = serial_output[1], volts2 = serial_output[1])
                     #print one_list
                 except:
                     continue
