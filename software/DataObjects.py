@@ -1,7 +1,5 @@
 import time
 import csv
-from serialfunctions import SerialPort
-from GraphPanels import GraphPanel
 
 class DataObject(object):
     """Class used to compare values coming from serial and determine
@@ -18,9 +16,11 @@ class DataObject(object):
     volt_ranges = "nothing"
     amps_ranges = "nothing"
     temp_ranges = "nothing"
+    power_ranges = "Watts"
     power = ""
-    serial_port = SerialPort()
-    #graph_panel = GraphPanel()
+    volts_list = []
+    amps_list = []
+
     def __init__(self, volts, amps, temp, Vmax, Vmin, Amax, Amin, Tmax, Tmin, port):
         """Class constructor"""
         
@@ -35,6 +35,8 @@ class DataObject(object):
         self.Tmax  = Tmax
         self.Tmin  = Tmin
         self.port = port
+ 
+        #self.graph_panel = panel_one.draw_graph(self,amps= 0, amps2= 0, volts = 0, volts2 = 0)
         #Index = Index+1        
     
     def changeclassvariables(self):
@@ -45,9 +47,13 @@ class DataObject(object):
     #Method to calculate power using voltage and amps coming from serial
     def calculatepower (self, volts, amps):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
-        DataObject.power = float(volts) * float(amps)
-        DataObject.power = str(DataObject.power)
-
+        try:
+            DataObject.power = float(volts) * float(amps)
+            DataObject.power = str(DataObject.power)
+            return DataObject.power
+        except:
+            pass
+            
     #Method to check if voltage falls within parameters
     def checkerrorvoltage(self, volts, volt_ranges, Vmax, Vmin):
         timestr = time.strftime("Date: %Y-%m-%d Time: %H-%M-%S")
@@ -59,6 +65,7 @@ class DataObject(object):
             DataObject.error_marker = DataObject.error_marker + 1
         elif float(Vmax) < float(volts):
             DataObject.volt_ranges = "Above range"
+            DataObject.power_ranges = "Above range"
             DataObject.error_marker = DataObject.error_marker + 1
         else:
             DataObject.volt_ranges = "In range"
@@ -89,12 +96,10 @@ class DataObject(object):
             DataObject.temp_ranges = "In range"
             
 
-    
-    def draw_graph(self):
-        self.figure = Figure()
-        self.axes = self.figure.add_subplot(111)
-        self.canvas = FigureCanvas(self, -1, self.figure)
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        self.SetSizer(self.sizer)
-        self.Fit()
+   
+    def make_list(self,amps,volts):
+
+        DataObject.volts_list.append(volts)
+        DataObject.amps_list.append(amps)
+        
+
